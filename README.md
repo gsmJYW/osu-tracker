@@ -1,7 +1,7 @@
 # osu-tracker
 지정한 플레이어가 상위 100개 pp 기록을 갱신할 때마다 알려주는 디스코드 봇입니다.
 
-## [DB 생성문]
+## DB 생성문
 ```sql
 CREATE DATABASE `osutracker` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
