@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -33,7 +32,7 @@ namespace osu_tracker
         }
 
         // 비트맵 id로 맵 정보를 불러옴
-        public static MapInfo getMapInfo(int beatmap_id)
+        public static MapInfo GetMapInfo(int beatmap_id)
         {
             string mapInfoJson;
 
@@ -54,123 +53,11 @@ namespace osu_tracker
         }
 
         // 문자열로 된 시각을 오프셋으로 변환
-        public static DateTimeOffset dateToOffset(string date)
+        public static DateTimeOffset DateToOffset(string date)
         {
             DateTime dateTime = DateTime.ParseExact(date, "yyyy-MM-dd HH:mm:ss", null).AddHours(9); // 한국 시간 = UTC +9
             long dateTimeMs = (long)dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
             return DateTimeOffset.FromUnixTimeMilliseconds(dateTimeMs);
-        }
-
-        // 문자열로 된 랭크를 이미지 링크로 변환
-        public static string rankToImageUrl(string rank)
-        {
-            switch (rank)
-            {
-                case "XH":
-                    return "https://imgur.com/UzDVLCF.png";
-
-                case "X":
-                    return "https://imgur.com/7hMmYYW.png";
-
-                case "SH":
-                    return "https://imgur.com/AMT9Iyy.png";
-
-                case "S":
-                    return "https://imgur.com/NXxWkeX.png";
-
-                case "A":
-                    return "https://imgur.com/QCzekYf.png";
-
-                case "B":
-                    return "https://imgur.com/xq2Q4wB.png";
-
-                case "C":
-                    return "https://imgur.com/fL372Ks.png";
-
-                default:
-                    return "https://imgur.com/Dxlcytu.png";
-            }
-        }
-
-        // 노트 판정 개수로 정확도 계산
-        public static double getAccuracy(int count300, int count100, int count50, int countMiss)
-        {
-            return (50.0 * count50 + 100.0 * count100 + 300.0 * count300) / (300.0 * (countMiss + count50 + count100 + count300)) * 100.0;
-        }
-
-        // 정수로 쓰여져있는 모드 값을 문자열로 변환
-        public static string modsToString(int mods)
-        {
-            bool[] modsBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
-            string modsStr = "";
-
-            for (int i = 1; i <= modsBinary.Length; i++)
-            {
-                if (modsBinary[modsBinary.Length - i])
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            modsStr += "NF";
-                            break;
-
-                        case 2:
-                            modsStr += "EZ";
-                            break;
-
-                        case 3:
-                            modsStr += "TD";
-                            break;
-
-                        case 4:
-                            modsStr += "HD";
-                            break;
-
-                        case 5:
-                            modsStr += "HR";
-                            break;
-
-                        case 6:
-                            modsStr += "SD";
-                            break;
-
-                        case 7:
-                            modsStr += "DT";
-                            break;
-
-                        case 9:
-                            modsStr += "HT";
-                            break;
-
-                        case 10:
-                            modsStr += "NC";
-                            break;
-
-                        case 11:
-                            modsStr += "FL";
-                            break;
-
-                        case 13:
-                            modsStr += "SO";
-                            break;
-
-                        case 15:
-                            modsStr += "PF";
-                            break;
-                    }
-                }
-            }
-
-            if (modsStr.Contains("NC"))
-                modsStr = modsStr.Replace("DT", "");
-
-            if (modsStr.Contains("PF"))
-                modsStr = modsStr.Replace("SD", "");
-
-            if (modsStr == "")
-                return modsStr;
-            else
-                return "+" + modsStr;
         }
     }
 }
