@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,25 +8,34 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using osu_tracker.api;
+using osu_tracker.embed;
 
 namespace osu_tracker
 {
     class Program : ModuleBase<ShardedCommandContext>
     {
-        public static string key = ""; // api 키
-        public static string token = ""; // 봇 토큰
-        public static string botImageUrl = ""; // 봇 프로필 사진 링크
-
         private static DiscordShardedClient _client;
+
         private CommandService _commands;
         private IServiceProvider _services;
 
         static void Main(string[] args)
         {
+            try
+            {
+                new Config();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            
             // mysql 연결 시도
             try
             {
-                Sql.Connect();
+                new Sql();
             }
             // 실패 시 종료
             catch (Exception e)
@@ -40,7 +50,7 @@ namespace osu_tracker
                 .GetResult();
         }
 
-        public async Task checkNewScores()
+        public async Task CheckNewBest()
         {
             DataTable users = Sql.Get("SELECT user_id FROM targets GROUP BY user_id");
 
@@ -49,28 +59,27 @@ namespace osu_tracker
             {
                 try
                 {
-                    string user_id = user["user_id"].ToString();
-                    var userBest = new UserBest(user_id);
+                    int user_id = (int)user["user_id"];
+
+                    UserBest userBest = new UserBest(user_id);
+                    Score newBest = userBest.NewBest();
 
                     // 새로운 베퍼포가 있을 경우
-                    if (userBest.newScore != null)
+                    if (newBest!= null)
                     {
-                        var scoreInfoEmbed = new ScoreInfoEmbed(userBest);
+                        ScoreEmbed scoreInfoEmbed = new ScoreEmbed(newBest);
                         DataTable channels = Sql.Get("SELECT guild_id, channel_id FROM targets WHERE user_id = '{0}'", user_id);
 
                         foreach (DataRow channel in channels.Rows)
                         {
-                            ulong guild_id = 0;
-                            ulong channel_id = 0;
+                            ulong guild_id = ulong.Parse(channel["guild_id"].ToString());
+                            ulong channel_id = ulong.Parse(channel["channel_id"].ToString());
 
                             // 스코어 정보 전송
                             try
                             {
-                                guild_id = ulong.Parse(channel["guild_id"].ToString());
-                                channel_id = ulong.Parse(channel["channel_id"].ToString());
-
                                 var socketTextChannel = _client.GetGuild(guild_id).GetTextChannel(channel_id);
-                                await socketTextChannel.SendMessageAsync(embed: scoreInfoEmbed.embed);
+                                await socketTextChannel.SendMessageAsync(embed: scoreInfoEmbed.Build());
                             }
                             // 실패 시 채널이 삭제된 것으로 판단하고 DB에서 삭제
                             catch (NullReferenceException)
@@ -95,7 +104,7 @@ namespace osu_tracker
             }
 
             Thread.Sleep(1000);
-            await Task.Factory.StartNew(() => checkNewScores());
+            await Task.Factory.StartNew(() => CheckNewBest());
         }
 
         public async Task RunBotAsync()
@@ -109,9 +118,9 @@ namespace osu_tracker
             _client.Log += _client_Log;
 
             await RegisterCommandsAsync();
-            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.LoginAsync(TokenType.Bot, Config.bot_token);
             await _client.StartAsync();
-            await checkNewScores();
+            await CheckNewBest();
             await Task.Delay(-1);
         }
 
