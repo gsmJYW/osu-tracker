@@ -24,7 +24,7 @@ namespace osu_tracker.embed
 
                 foreach (DataRow user in users.Rows)
                 {
-                    User userInfo = Get.UserByName(user["user_id"].ToString());
+                    User userInfo = OsuConvert.ToUser(user["user_id"].ToString());
                     userInfos.Add(userInfo);
                 }
 

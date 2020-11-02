@@ -20,7 +20,7 @@ namespace osu_tracker.embed
             WithDescription(string.Format("**[{0}]{1} {2:0.##}🟊**\n​", beatmap.version, modsString, beatmap.difficultyrating));
             WithUrl(string.Format("https://osu.ppy.sh/beatmapsets/{0}#osu/{1}", beatmap.beatmapset_id, score.beatmap_id));
             WithColor(new Color(0xFF69B4));
-            WithTimestamp(OsuConvert.ToOffset(score.date));
+            WithTimestamp(OsuConvert.ToDateTimeOffset(score.date));
             WithFooter(footer => { footer
                     .WithText((score.index + 1) + "번째 탑 플레이");
             });

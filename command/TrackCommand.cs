@@ -25,7 +25,7 @@ namespace osu_tracker.command
 
             try
             {
-                user = Get.UserByName(username);
+                user = OsuConvert.ToUser(username);
             }
             catch (Exception e)
             {

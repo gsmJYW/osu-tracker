@@ -8,7 +8,7 @@ namespace osu_tracker.embed
         public UserEmbed(User user)
         {
             UserBest userBest = new UserBest(user.user_id);
-            string ppString, ppRankString, ppCountryRankString, modString = Get.ModString(userBest.MainMods());
+            string ppString, ppRankString, ppCountryRankString, modString = OsuConvert.ToModString(userBest.MainMods());
 
             if (modString.Length == 0)
             {
@@ -31,7 +31,7 @@ namespace osu_tracker.embed
 
             WithColor(new Color(0xFF69B4));
             WithDescription("​");
-            WithTimestamp(Get.OffsetByDate(user.join_date));
+            WithTimestamp(OsuConvert.ToDateTimeOffset(user.join_date));
             WithFooter(footer => { footer
                 .WithText("가입 일시");
             });
