@@ -77,7 +77,7 @@ namespace osu_tracker
         }
 
         // 문자열로 된 시각을 오프셋으로 변환
-        public static DateTimeOffset ToOffset(string date)
+        public static DateTimeOffset ToDateTimeOffset(string date)
         {
             DateTime dateTime = DateTime.ParseExact(date, "yyyy-MM-dd HH:mm:ss", null).AddHours(9); // 한국 시간 = UTC +9
             long dateTimeMs = (long)dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
