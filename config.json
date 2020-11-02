@@ -1,0 +1,13 @@
+// 실제 프로그램 사용 시에는 프로젝트 폴더가 아닌 실행 폴더로 옮기세요
+{
+	"bot_token": "디스코드 봇 토큰",
+	"api_key": "osu! api 인증키",
+	"sql": {
+		"server": "서버 주소",
+		"port": "포트 번호",
+		"database": "osutracker",
+		"uid": "유저명",
+		"pwd": "패스워드",
+		"charset": "utf8"
+	}
+}
