@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 
@@ -6,18 +7,20 @@ namespace osu_tracker
 {
     class Sql
     {
-        public static string server = ""; // 서버 주소
-        public static string port = ""; // 포트 번호
-        public static string database = "osutracker"; // db 이름
-        public static string uid = ""; // 유저 id
-        public static string pwd = ""; // 패스워드
-        public static string charset = "utf8";
+        public static MySqlConnection conn;
 
-        public static string connStr = "Server=" + server + ";Port=" + port + ";Database=" + database + ";Uid=" + uid + ";Pwd=" + pwd + ";CharSet=" + charset;
-        public static MySqlConnection conn = new MySqlConnection(connStr);
-
-        public static void Connect()
+        public Sql()
         {
+            Dictionary<string, string> sql = Config.sql;
+            
+            string connStr = string.Format
+            (
+                "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet={5}",
+                sql["server"], sql["port"], sql["database"], sql["uid"], sql["pwd"], sql["charset"]
+            );
+
+            conn = new MySqlConnection(connStr);
+
             try
             {
                 conn.Open();
@@ -72,7 +75,7 @@ namespace osu_tracker
 
                 if (command.ExecuteNonQuery() != 1)
                 {
-                    throw new Exception(query + "\n실행 실패");
+                    throw new Exception("failed to execute: " + query);
                 }
             }
             catch (Exception e)
