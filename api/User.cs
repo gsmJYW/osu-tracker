@@ -1,11 +1,12 @@
-﻿namespace osu_tracker
+﻿namespace osu_tracker.api
 {
-    class UserInfo
+    class User
     {
         public int user_id { get; set; }
         public string username { get; set; }
         public int playcount { get; set; }
         public int pp_rank { get; set; }
+        public int total_seconds_played { get; set; }
         public int pp_country_rank { get; set; }
         public double pp_raw { get; set; }
         public double level { get; set; }
