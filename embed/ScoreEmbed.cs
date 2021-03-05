@@ -5,12 +5,14 @@ namespace osu_tracker.embed
 {
     class ScoreEmbed : EmbedBuilder
     {
-        public ScoreEmbed(Score score)
+        public ScoreEmbed(UserBest userBest)
         {
-            User user = OsuConvert.ToUser(score.user_id);
-            Beatmap beatmap = OsuConvert.ToBeatmap(score.beatmap_id, score.enabled_mods);
+            Score best = userBest.newBest;
+            User user = User.Search(best.user_id);
+            Beatmap beatmap = Beatmap.Search(best.beatmap_id, best.enabled_mods);
 
-            string modsString = OsuConvert.ToModString(score.enabled_mods);
+            string modsString = best.enabled_mods.ToModString();
+
             if (modsString.Length > 0)
             {
                 modsString = " +" + modsString;
@@ -18,31 +20,61 @@ namespace osu_tracker.embed
 
             WithTitle(string.Format("\n{0} - {1}", beatmap.artist, beatmap.title));
             WithDescription(string.Format("**[{0}]{1} {2:0.##}🟊**\n​", beatmap.version, modsString, beatmap.difficultyrating));
-            WithUrl(string.Format("https://osu.ppy.sh/beatmapsets/{0}#osu/{1}", beatmap.beatmapset_id, score.beatmap_id));
+            WithUrl(string.Format("https://osu.ppy.sh/beatmapsets/{0}#osu/{1}", beatmap.beatmapset_id, best.beatmap_id));
             WithColor(new Color(0xFF69B4));
-            WithTimestamp(OsuConvert.ToDateTimeOffset(score.date));
+            WithTimestamp(best.date.ToDateTimeOffset());
             WithFooter(footer => { footer
-                    .WithText((score.index + 1) + "번째 탑 플레이");
+                    .WithText((best.index + 1) + "번째 탑 플레이");
             });
-            WithThumbnailUrl(score.RankImageUrl());
+            WithThumbnailUrl(best.RankImageUrl());
             WithImageUrl(string.Format("https://assets.ppy.sh/beatmaps/{0}/covers/cover.jpg", beatmap.beatmapset_id));
             WithAuthor(author => { author
                 .WithName(user.username)
                 .WithUrl("https://osu.ppy.sh/users/" + user.user_id)
-                .WithIconUrl("https://github.com/ppy/osu/blob/master/assets/lazer.png?raw=true");
+                .WithIconUrl("https://www.countryflags.io/" + user.country.ToLower() + "/flat/64.png");
             });
-            AddField("점수", score.score, true);
-            AddField("퍼포먼스", string.Format("{0:0.##}pp", score.pp), true);
+
+            AddField("점수", best.score, true);
+            AddField("퍼포먼스", string.Format("{0:0.##}pp", best.pp), true);
+
+            if (userBest.previous_pp_raw == 0 && userBest.previous_pp_rank != 0)
+            {
+                AddField("pp", string.Format("{0:0.##}pp", userBest.pp_raw));
+            }
+            else
+            {
+                AddField("pp", string.Format("{0:0.##}pp ({1}{2:0.##})",
+                    userBest.pp_raw,
+                    userBest.pp_raw >= userBest.previous_pp_raw ? "+" : "",
+                    userBest.pp_raw - userBest.previous_pp_raw
+                    ), true
+                );
+            }
+            
+            AddField("콤보", string.Format("{0}/{1}", best.maxcombo, beatmap.max_combo), true);
+            AddField("정확도", string.Format("{0:0.##}%", best.Accuracy()), true);
+
+            if (userBest.previous_pp_rank == 0)
+            {
+                AddField("순위", string.Format("#{0}", userBest.pp_rank), true);
+            }
+            else
+            {
+                AddField("순위", string.Format("#{0} ({1}{2})",
+                    userBest.pp_rank,
+                    userBest.previous_pp_rank >= userBest.pp_rank ? "+" : "",
+                    userBest.previous_pp_rank - userBest.pp_rank
+                    ), true
+                );
+            }
+
+            AddField("300", "x" + best.count300, true);
+            AddField("100", "x" + best.count100, true);
             AddField("\u200B", "\u200B", true);
-            AddField("콤보", string.Format("{0}/{1}", score.maxcombo, beatmap.max_combo), true);
-            AddField("정확도", string.Format("{0:0.##}%", score.Accuracy()), true);
+            AddField("50", "x" + best.count50, true);
+            AddField("미스", "x" + best.countmiss, true);
             AddField("\u200B", "\u200B", true);
-            AddField("300", "x" + score.count300, true);
-            AddField("100", "x" + score.count100, true);
-            AddField("\u200B", "\u200B", true);
-            AddField("50", "x" + score.count50, true);
-            AddField("미스", "x" + score.countmiss, true);
-            AddField("\u200B", "\u200B", true);
+
         }
     }
 }
