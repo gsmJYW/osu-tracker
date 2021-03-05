@@ -9,8 +9,8 @@ namespace osu_tracker.embed
             WithColor(new Color(0x527788));
             WithThumbnailUrl(avatarUrl);
             AddField(">help", "osu!tracker의 사용법을 알려줍니다.");
-            AddField(">info [유저명/유저 id]", "플레이어의 정보를 알려줍니다.");
-            AddField(">track [유저명/유저 id]",
+            AddField(">info 유저명/유저id", "플레이어의 정보를 알려줍니다.");
+            AddField(">track 유저명/유저id",
                     "이 채널에서 추적할 플레이어를 추가합니다.\n" +
                     "추가한 플레이어가 상위 pp 기록을 갱신할 때마다\n" +
                     "해당 스코어 정보를 채널에 알려줍니다.\n" +
