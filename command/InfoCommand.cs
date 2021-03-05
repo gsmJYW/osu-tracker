@@ -23,7 +23,7 @@ namespace osu_tracker.command
 
             try
             {
-                user = OsuConvert.ToUser(username);
+                user = User.Search(username);
             }
             catch (Exception e)
             {
