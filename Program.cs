@@ -39,7 +39,7 @@ namespace osu_tracker
             catch
             {
                 Console.WriteLine("프로그램 실행 시 다음 매개변수가 필요합니다:\n" +
-                    "[osu!API v1 키] [디스코드 봇 토큰] [MySQL 서버] [MySQL 포트] [MySQL DB] [MySQL 유저] [MySQL 비밀번호] <MySQL 인코딩>"
+                    "[osu!API v1 키] [디스코드 봇 토큰] [MySQL 서버 주소] [MySQL 포트 번호] [MySQL DB 이름] [MySQL 유저 id] [MySQL 비밀번호] <MySQL 문자 인코딩>"
                     );
                 return;
             }
