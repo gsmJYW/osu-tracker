@@ -1,6 +1,12 @@
-﻿namespace osu_tracker.api
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text.RegularExpressions;
+
+namespace osu_tracker.api
 {
-    class User
+    public class User
     {
         public int user_id { get; set; }
         public string username { get; set; }
@@ -13,5 +19,23 @@
         public double accuracy { get; set; }
         public string country { get; set; }
         public string join_date { get; set; }
+
+        // 유저명 또는 유저 id로 유저 정보를 불러옴
+        public static User Search(object username)
+        {
+            string userJson;
+
+            try
+            {
+                username = Regex.Replace(username.ToString(), @"[^0-9 a-z A-Z \s \[ \] \- _]+", "").Trim(); // 닉네임이나 id에 포함 불가능한 문자 삭제
+                userJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user?k={0}&u={1}", Program.api_key, username)); // api에 유저 정보 요청
+
+                return JsonConvert.DeserializeObject<List<User>>(userJson)[0];
+            }
+            catch
+            {
+                throw new Exception("플레이어를 찾을 수 없습니다.");
+            }
+        }
     }
 }
