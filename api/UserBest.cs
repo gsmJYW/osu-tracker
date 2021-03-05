@@ -9,69 +9,67 @@ namespace osu_tracker.api
 {
     class UserBest
     {
-        int user_id;
         List<Score> bestList;
+        int user_id;
+
+        public int mainMods;
+        public double pp_sum = 0.0;
+        public Score newBest = null;
+
+        public double previous_pp_raw, pp_raw;
+        public int previous_pp_rank, pp_rank;
 
         public UserBest(int user_id)
         {
-            string userBest;
             this.user_id = user_id;
 
-            // api에 베퍼포 정보 요청
-            using (WebClient wc = new WebClient())
-            {
-                userBest = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user_best?k={0}&u={1}&limit=100", Config.api_key, user_id));
-            }
-
-            bestList = JsonConvert.DeserializeObject<List<Score>>(userBest);
-        }
-
-        // 새로운 베퍼포
-        public Score NewBest()
-        {
-            Score newBest = null;
-            double previous_pp_sum, pp_sum = 0.0;
+            string userBest = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user_best?k={0}&u={1}&limit=100", Program.api_key, user_id)); // api에 베퍼포 정보 요청
+            bestList = JsonConvert.DeserializeObject<List<Score>>(userBest); // 베퍼포 100개를 Score 리스트로 변환
 
             foreach (Score best in bestList)
             {
                 pp_sum += best.pp;
             }
+        }
 
-            // 점수 정보에 해당 유저가 있는지 확인
-            DataTable findUser = Sql.Get("SELECT user_id FROM pphistories WHERE user_id = {0}", user_id);
+        // 새로운 베퍼포
+        public void GetNewBest()
+        {
+            double previous_pp_sum;
 
-            // 없을 경우 새로 삽입
-            if (findUser.Rows.Count == 0)
+            User user = User.Search(user_id);
+
+            pp_raw = user.pp_raw;
+            pp_rank = user.pp_rank;
+
+            DataTable userTableSearch = Sql.Get("SELECT user_id FROM pphistories WHERE user_id = {0}", user_id); // 점수 정보에 해당 유저가 있는지 확인
+            DataRow ppHistory = Sql.Get("SELECT * FROM pphistories WHERE user_id = {0}", user_id).Rows[0];
+
+            previous_pp_sum = Convert.ToDouble(ppHistory["pp_sum"]);
+            previous_pp_raw = Convert.ToDouble(ppHistory["pp_raw"]);
+            previous_pp_rank = Convert.ToInt32(ppHistory["pp_rank"]);
+
+            if (!pp_sum.IsCloseTo(previous_pp_sum))
             {
-                Sql.Execute("INSERT INTO pphistories VALUES ({0}, {1})", user_id, pp_sum);
-            }
-            // 있을 경우 불러옴
-            else
-            {
-                previous_pp_sum = double.Parse(Sql.Get("SELECT previous_pp_sum FROM pphistories WHERE user_id = {0}", user_id).Rows[0]["previous_pp_sum"].ToString());
+                newBest = bestList.OrderByDescending(
+                    x => DateTime.ParseExact(x.date, "yyyy-MM-dd HH:mm:ss", null).AddHours(9)
+                ).FirstOrDefault();
 
-                if (Compare(pp_sum, previous_pp_sum) == 1)
-                {
-                    Sql.Execute("UPDATE pphistories SET previous_pp_sum = {0} WHERE user_id = {1}", pp_sum, user_id);
-
-                    newBest = bestList.OrderByDescending(
-                        x => DateTime.ParseExact(x.date, "yyyy-MM-dd HH:mm:ss", null).AddHours(9)
-                    ).FirstOrDefault();
-
-                    newBest.index = bestList.IndexOf(newBest);
-                }
+                newBest.index = bestList.IndexOf(newBest);
             }
 
-            return newBest;
+            Sql.Execute("UPDATE pphistories SET pp_sum = {0}, pp_raw = {1}, pp_rank = {2} WHERE user_id = {3}", pp_sum, pp_raw, pp_rank, user_id);
         }
 
         // 주력 모드
-        public int MainMods()
+        public void GetMainMods()
         {
             int weight = 0;
             Dictionary<int, double> modList = new Dictionary<int, double>();
 
-            foreach (Score best in bestList)
+            List<Score> halfBestList = bestList.GetRange(0, bestList.Count / 2); // 베퍼포 중 만 검사
+
+            foreach (Score best in halfBestList)
             {
                 int mods = best.enabled_mods;
                 bool[] modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
@@ -120,19 +118,7 @@ namespace osu_tracker.api
                 weight++;
             }
 
-            int mainMods = modList.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-            return mainMods;
-        }
-
-        // 같으면 0, 왼쪽이 크면 1, 오른쪽이 크면 2
-        public int Compare(double a, double b)
-        {
-            if (Math.Abs(a - b) < 0.0001)
-                return 0;
-            else if (a > b)
-                return 1;
-            else
-                return 2;
+            mainMods = modList.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
         }
     }
 }
