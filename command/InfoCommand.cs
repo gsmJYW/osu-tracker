@@ -31,8 +31,8 @@ namespace osu_tracker.command
                 return;
             }
 
-            var userEmbed = new UserEmbed(user);
-            await ReplyAsync(embed: userEmbed.Build());
+            var infoEmbed = new InfoEmbed(user);
+            await ReplyAsync(embed: infoEmbed.Build());
         }
     }
 }
