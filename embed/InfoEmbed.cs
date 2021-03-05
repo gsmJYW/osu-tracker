@@ -3,9 +3,9 @@ using osu_tracker.api;
 
 namespace osu_tracker.embed
 {
-    class UserEmbed : EmbedBuilder
+    class InfoEmbed : EmbedBuilder
     {
-        public UserEmbed(User user)
+        public InfoEmbed(User user)
         {
             string mainModString;
 
