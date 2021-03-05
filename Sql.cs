@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 
@@ -9,27 +8,19 @@ namespace osu_tracker
     {
         public static MySqlConnection conn;
 
-        public Sql()
+        public Sql(string server, string port, string database, string uid, string pwd, string charset)
         {
-            Dictionary<string, string> sql = Config.sql;
-            
             string connStr = string.Format
             (
                 "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet={5}",
-                sql["server"], sql["port"], sql["database"], sql["uid"], sql["pwd"], sql["charset"]
+                server, port, database, uid, pwd, charset
             );
 
             conn = new MySqlConnection(connStr);
 
-            try
-            {
-                conn.Open();
-                conn.Close();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            // SQL 접속 시도 (실패 시 예외)
+            conn.Open();
+            conn.Close();
         }
 
         public static DataTable Get(string str, params object[] args)
