@@ -150,18 +150,9 @@ namespace osu_tracker
 
                             await channelToSend.SendMessageAsync(embed: scoreEmbed.Build());
                         }
-                        // 실패 시 채널이 삭제된 것으로 판단하고 DB에서 삭제
-                        catch
+                        catch (Exception e)
                         {
-                            Sql.Execute("DELETE FROM targets WHERE guild_id = '{0}'", guild_id);
-
-                            // 해당 서버에서 삭제한 유저가 타겟에 더 이상 없을 경우 점수 기록도 삭제
-                            DataTable targetSearchTable = Sql.Get("SELECT user_id FROM targets WHERE user_id = {0}", user.user_id);
-
-                            if (targetSearchTable.Rows.Count == 0)
-                            {
-                                Sql.Execute("DELETE FROM pphistories WHERE user_id = {0}", user.user_id);
-                            }
+                            Console.WriteLine(e.Message);
                         }
                     }
                 }
@@ -170,6 +161,8 @@ namespace osu_tracker
                     Console.WriteLine(e.Message);
                 }
             }
+
+            Sql.Execute("DELETE FROM pphistories WHERE user_id NOT IN (SELECT user_id FROM targets)");
 
             Thread.Sleep(1000);
             await Task.Factory.StartNew(() => CheckNewBest());
@@ -183,16 +176,24 @@ namespace osu_tracker
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
                 .BuildServiceProvider();
+
             _client.Log += _client_Log;
+            _client.GuildUnavailable += _client_LeftGuild;
+            _client.LeftGuild += _client_LeftGuild;
 
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, bot_token);
             await _client.StartAsync();
             
-            Thread.Sleep(5000);
-
             await CheckNewBest();
             await Task.Delay(-1);
+        }
+
+        private Task _client_LeftGuild(SocketGuild arg)
+        {
+            // 서버에서 추방됐거나 서버가 삭제됐을 경우 해당 길드에서 추적하던 유저 제거
+            Sql.Execute("DELETE FROM targets WHERE guild_id = '{0}'", arg.Id);
+            return Task.CompletedTask;
         }
 
         private Task _client_Log(LogMessage arg)
