@@ -25,6 +25,7 @@ namespace osu_tracker
 
         static void Main(string[] args)
         {
+            // 환경설정 매개변수
             try
             {
                 api_key = args[0];
@@ -44,6 +45,7 @@ namespace osu_tracker
                 return;
             }
 
+            // charset 기본값 UTF-8
             try
             {
                 mysql_charset = args[7];
@@ -124,31 +126,10 @@ namespace osu_tracker
                         ulong guild_id = ulong.Parse(guildRow["guild_id"].ToString());
                         SocketGuild guild = _client.GetGuild(guild_id);
 
-                        // 'osu!tracker' 채널을 탐색해서 있으면 거기로 전송, 없으면 채널 생성 후 전송
                         try
                         {
-                            SocketTextChannel channelToSend = null;
-                            bool isThereOsuTrackerChannel = false;
-
-                            IReadOnlyCollection<SocketTextChannel> channelList = guild.TextChannels;
-
-                            foreach (SocketTextChannel channel in channelList)
-                            {
-                                if (channel.Name.ToLower() == "osu-tracker")
-                                {
-                                    isThereOsuTrackerChannel = true;
-                                    channelToSend = channel;
-                                    break;
-                                }
-                            }
-
-                            if (!isThereOsuTrackerChannel)
-                            {
-                                RestTextChannel CreatedChannel = (await guild.CreateTextChannelAsync("osu-tracker"));
-                                channelToSend = guild.GetTextChannel(CreatedChannel.Id);
-                            }
-
-                            await channelToSend.SendMessageAsync(embed: scoreEmbed.Build());
+                            SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
+                            await osuTrackerChannel.SendMessageAsync(embed: scoreEmbed.Build());
                         }
                         catch (Exception e)
                         {
@@ -160,11 +141,11 @@ namespace osu_tracker
                 {
                     Console.WriteLine(e.Message);
                 }
+
+                Console.WriteLine(userRow["user_id"]);
             }
 
             Sql.Execute("DELETE FROM pphistories WHERE user_id NOT IN (SELECT user_id FROM targets)");
-
-            Thread.Sleep(1000);
             await Task.Factory.StartNew(() => CheckNewBest());
         }
 
@@ -178,6 +159,7 @@ namespace osu_tracker
                 .BuildServiceProvider();
 
             _client.Log += _client_Log;
+            _client.JoinedGuild += _client_JoinedGuild;
             _client.GuildUnavailable += _client_LeftGuild;
             _client.LeftGuild += _client_LeftGuild;
 
@@ -189,10 +171,36 @@ namespace osu_tracker
             await Task.Delay(-1);
         }
 
-        private Task _client_LeftGuild(SocketGuild arg)
+        private async Task _client_JoinedGuild(SocketGuild guild)
+        {
+            // 서버 입장 시 권한 확인
+            GuildPermissions permission = guild.GetUser(_client.CurrentUser.Id).GuildPermissions;
+
+            try
+            {
+                // 관리자 권한이 있는지 확인
+                if (permission.Administrator)
+                {
+                    await guild.DefaultChannel.SendMessageAsync(_client.CurrentUser.Mention + "를 초대해주셔서 감사합니다.\n**>help**를 입력하여 도움말을 보실 수 있습니다.");
+                    SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
+                }
+                else
+                {
+                    await guild.DefaultChannel.SendMessageAsync("https://discord.com/api/oauth2/authorize?client_id=755681499214381136&permissions=8&scope=bot");
+                    await guild.DefaultChannel.SendMessageAsync(_client.CurrentUser.Mention + "은(는) **관리자 권한**이 필요합니다.\n권한이 부족해 서버에서 내보냅니다, 다시 초대해주세요.");
+                    await guild.LeaveAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private Task _client_LeftGuild(SocketGuild guild)
         {
             // 서버에서 추방됐거나 서버가 삭제됐을 경우 해당 길드에서 추적하던 유저 제거
-            Sql.Execute("DELETE FROM targets WHERE guild_id = '{0}'", arg.Id);
+            Sql.Execute("DELETE FROM targets WHERE guild_id = '{0}'", guild.Id);
             return Task.CompletedTask;
         }
 
