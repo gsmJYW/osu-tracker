@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace osu_tracker.embed
 {
-    class UserListEmbed : EmbedBuilder
+    class ListEmbed : EmbedBuilder
     {
-        public UserListEmbed(DataTable userTable)
+        public ListEmbed(DataTable userTable)
         {
             WithTitle("추적 중인 플레이어");
             WithColor(new Color(0xFF69B4));
