@@ -39,11 +39,11 @@ namespace osu_tracker.embed
 
             if (userBest.previous_pp_raw == 0 && userBest.previous_pp_rank != 0)
             {
-                AddField("pp", string.Format("{0:0.##}pp", userBest.pp_raw));
+                AddField("퍼포먼스 변화", string.Format("{0:0.##}pp (복귀 유저)", userBest.pp_raw));
             }
             else
             {
-                AddField("pp", string.Format("{0:0.##}pp ({1}{2:0.##})",
+                AddField("퍼포먼스 변화", string.Format("{0:0.##}pp ({1}{2:0.##})",
                     userBest.pp_raw,
                     userBest.pp_raw >= userBest.previous_pp_raw ? "+" : "",
                     userBest.pp_raw - userBest.previous_pp_raw
@@ -56,11 +56,11 @@ namespace osu_tracker.embed
 
             if (userBest.previous_pp_rank == 0)
             {
-                AddField("순위", string.Format("#{0}", userBest.pp_rank), true);
+                AddField("순위 변화", string.Format("#{0} (신규 유저)", userBest.pp_rank), true);
             }
             else
             {
-                AddField("순위", string.Format("#{0} ({1}{2})",
+                AddField("순위 변화", string.Format("#{0} ({1}{2})",
                     userBest.pp_rank,
                     userBest.previous_pp_rank >= userBest.pp_rank ? "+" : "",
                     userBest.previous_pp_rank - userBest.pp_rank
