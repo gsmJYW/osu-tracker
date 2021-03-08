@@ -41,13 +41,13 @@ namespace osu_tracker.embed
 
                 foreach (User user in userList)
                 {
-                    // int 최댓값으로 바꿨던 순위 0으로 복구
+                    // int 최댓값으로 바꿨던 순위를 0으로 복구
                     if (user.pp_rank == int.MaxValue)
                     {
                         user.pp_rank = 0;
                     }
 
-                    AddField(user.username, string.Format("{0}pp ({1})",
+                    AddField(user.username, string.Format("{0}pp (#{1})",
                         user.pp_raw == 0 && user.pp_rank != 0 ? "?" : string.Format("{0:0.##}", user.pp_raw),
                         user.pp_rank == 0 ? "?" : user.pp_rank.ToString()
                         ), true
