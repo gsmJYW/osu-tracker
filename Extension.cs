@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace osu_tracker
 {
@@ -22,8 +25,7 @@ namespace osu_tracker
 
             return DateTimeOffset.FromUnixTimeMilliseconds(dateTimeMs);
         }
-
-
+        
         // 모드에 해당하는 문자열
         public static string ToModString(this int mods)
         {
@@ -94,6 +96,40 @@ namespace osu_tracker
                 modString = modString.Replace("SD", "");
 
             return modString;
+        }
+
+        // 특정 이름을 가진 채널을 검색, 있을 경우 검색된 채널 반환, 없을 경우 생성한 후 생성한 채널 반환
+        public async static Task<SocketTextChannel> CreateChannelIfNotExist(this SocketGuild guild, string name)
+        {
+            try
+            {
+                SocketTextChannel osuTrackerChannel = null;
+                bool isThereOsuTrackerChannel = false;
+
+                IReadOnlyCollection<SocketTextChannel> channelList = guild.TextChannels;
+
+                foreach (SocketTextChannel channel in channelList)
+                {
+                    if (channel.Name.ToLower() == name.ToLower())
+                    {
+                        isThereOsuTrackerChannel = true;
+                        osuTrackerChannel = channel;
+                        break;
+                    }
+                }
+
+                if (!isThereOsuTrackerChannel)
+                {
+                    ulong osuTrackerChannelId = (await guild.CreateTextChannelAsync("osu-tracker")).Id;
+                    osuTrackerChannel = guild.GetTextChannel(osuTrackerChannelId);
+                }
+
+                return osuTrackerChannel;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
