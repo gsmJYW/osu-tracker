@@ -63,11 +63,7 @@ namespace osu_tracker
                 conn.Open();
 
                 MySqlCommand command = new MySqlCommand(query, conn);
-
-                if (command.ExecuteNonQuery() != 1)
-                {
-                    throw new Exception("failed to execute: " + query);
-                }
+                command.ExecuteNonQuery();
             }
             catch (Exception e)
             {

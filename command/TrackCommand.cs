@@ -1,5 +1,4 @@
 ﻿using Discord.Commands;
-using Discord.Rest;
 using osu_tracker.api;
 using System;
 using System.Data;
@@ -33,13 +32,12 @@ namespace osu_tracker.command
                 return;
             }
 
-            // 해당 플레이어가 서버에 있는지 확인
-            DataTable targetSearchTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = {0}", user.user_id);
-            DataRow[] guildSearchRowArr = targetSearchTable.Select("guild_id = " + guild_id);
-
+            // 해당 서버에서 추적 중인 플레이어인지 확인
+            DataTable targetSearchTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = {0} AND guild_id = '{1}'", user.user_id, guild_id);
+            
             // 해당 서버에 없던 유저일 경우 추가
-            if (guildSearchRowArr.Length == 0)
-                {
+            if (targetSearchTable.Rows.Count == 0)
+            {
                 Sql.Execute("INSERT INTO targets VALUES ({0}, '{1}')", user.user_id, guild_id);
                 await ReplyAsync(string.Format("**{0}**에서 **{1}**님을 추적합니다.", Context.Guild.Name, user.username));
             }
@@ -47,13 +45,6 @@ namespace osu_tracker.command
             else 
             {
                 Sql.Execute("DELETE FROM targets WHERE user_id = {0} AND guild_id = '{1}'", user.user_id, guild_id);
-                
-                // 해당 서버에서 삭제 후 해당 유저가 타겟에 없을 경우 pp 기록도 삭제
-                if (targetSearchTable.Rows.Count == 1)
-                {
-                    Sql.Execute("DELETE FROM pphistories WHERE user_id = {0}", user.user_id);
-                }
-
                 await ReplyAsync(string.Format("더 이상 **{0}**에서 **{1}**님을 추적하지 않습니다.", Context.Guild.Name, user.username));
             }
 
