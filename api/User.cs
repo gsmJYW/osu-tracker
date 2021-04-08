@@ -23,12 +23,10 @@ namespace osu_tracker.api
         // 유저명 또는 유저 id로 유저 정보를 불러옴
         public static User Search(object username)
         {
-            string userJson;
-
             try
             {
                 username = Regex.Replace(username.ToString(), @"[^0-9 a-z A-Z \s \[ \] \- _]+", "").Trim(); // 닉네임이나 id에 포함 불가능한 문자 삭제
-                userJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user?k={0}&u={1}", Program.api_key, username)); // api에 유저 정보 요청
+                string userJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user?k={0}&u={1}", Program.api_key, username)); // api에 유저 정보 요청
 
                 return JsonConvert.DeserializeObject<List<User>>(userJson)[0];
             }
