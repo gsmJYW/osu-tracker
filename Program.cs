@@ -118,7 +118,7 @@ namespace osu_tracker
                         continue;
                     }
 
-                    ScoreEmbed scoreEmbed = new ScoreEmbed(userBest);
+                    BestEmbed scoreEmbed = new BestEmbed(userBest);
                     DataTable guildTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = '{0}'", user.user_id);
 
                     foreach (DataRow guildRow in guildTable.Rows)
@@ -141,8 +141,6 @@ namespace osu_tracker
                 {
                     Console.WriteLine(e.Message);
                 }
-
-                Console.WriteLine(userRow["user_id"]);
             }
 
             Sql.Execute("DELETE FROM pphistories WHERE user_id NOT IN (SELECT user_id FROM targets)");
@@ -160,7 +158,6 @@ namespace osu_tracker
 
             _client.Log += _client_Log;
             _client.JoinedGuild += _client_JoinedGuild;
-            _client.GuildUnavailable += _client_LeftGuild;
             _client.LeftGuild += _client_LeftGuild;
 
             await RegisterCommandsAsync();
