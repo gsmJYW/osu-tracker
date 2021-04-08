@@ -10,8 +10,9 @@ namespace osu_tracker.embed
     {
         public ListEmbed(DataTable userTable)
         {
-            WithTitle("추적 중인 플레이어");
             WithColor(new Color(0xFF69B4));
+
+            WithTitle("추적 중인 플레이어");
             WithDescription("\u200B");
 
             if (userTable.Rows.Count == 0)
