@@ -10,13 +10,13 @@
 ```sql
 CREATE DATABASE `osutracker` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-CREATE TABLE `targets` (
+CREATE TABLE `osutracker`.`targets` (
   `user_id` int(11) NOT NULL,
   `guild_id` char(18) NOT NULL,
   PRIMARY KEY (`user_id`,`guild_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-pphistories', 'CREATE TABLE `pphistories` (
+CREATE TABLE `osutracker`.`pphistories` (
   `user_id` int(11) NOT NULL,
   `pp_sum` double NOT NULL,
   `pp_raw` double NOT NULL,
