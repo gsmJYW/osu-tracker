@@ -3,9 +3,9 @@ using osu_tracker.api;
 
 namespace osu_tracker.embed
 {
-    class ScoreEmbed : EmbedBuilder
+    class BestEmbed : EmbedBuilder
     {
-        public ScoreEmbed(UserBest userBest)
+        public BestEmbed(UserBest userBest)
         {
             Score best = userBest.newBest;
             User user = User.Search(best.user_id);
@@ -18,21 +18,25 @@ namespace osu_tracker.embed
                 modsString = " +" + modsString;
             }
 
-            WithTitle(string.Format("\n{0} - {1}", beatmap.artist, beatmap.title));
-            WithDescription(string.Format("**[{0}]{1} {2:0.##}🟊**\n​", beatmap.version, modsString, beatmap.difficultyrating));
-            WithUrl(string.Format("https://osu.ppy.sh/beatmapsets/{0}#osu/{1}", beatmap.beatmapset_id, best.beatmap_id));
             WithColor(new Color(0xFF69B4));
-            WithTimestamp(best.date.ToDateTimeOffset());
-            WithFooter(footer => { footer
-                    .WithText((best.index + 1) + "번째 탑 플레이");
-            });
-            WithThumbnailUrl(best.RankImageUrl());
-            WithImageUrl(string.Format("https://assets.ppy.sh/beatmaps/{0}/covers/cover.jpg", beatmap.beatmapset_id));
+            
             WithAuthor(author => { author
                 .WithName(user.username)
                 .WithUrl("https://osu.ppy.sh/users/" + user.user_id)
                 .WithIconUrl("https://www.countryflags.io/" + user.country.ToLower() + "/flat/64.png");
             });
+
+            WithTitle(string.Format("\n{0} - {1}", beatmap.artist, beatmap.title));
+            WithDescription(string.Format("**[{0}]{1} {2:0.##}🟊**\n​", beatmap.version, modsString, beatmap.difficultyrating));
+            WithUrl(string.Format("https://osu.ppy.sh/beatmapsets/{0}#osu/{1}", beatmap.beatmapset_id, best.beatmap_id));
+
+            WithThumbnailUrl(best.RankImageUrl());
+            WithImageUrl(string.Format("https://assets.ppy.sh/beatmaps/{0}/covers/cover.jpg", beatmap.beatmapset_id));
+
+            WithFooter(footer => { footer
+                    .WithText((best.index + 1) + "번째 탑 플레이");
+            });
+            WithTimestamp(best.date.ToDateTimeOffset());
 
             AddField("점수", best.score, true);
             AddField("퍼포먼스", string.Format("{0:0.##}pp", best.pp), true);
@@ -71,6 +75,7 @@ namespace osu_tracker.embed
             AddField("300", "x" + best.count300, true);
             AddField("100", "x" + best.count100, true);
             AddField("\u200B", "\u200B", true);
+
             AddField("50", "x" + best.count50, true);
             AddField("미스", "x" + best.countmiss, true);
             AddField("\u200B", "\u200B", true);
