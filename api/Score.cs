@@ -1,4 +1,10 @@
-﻿namespace osu_tracker.api
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text.RegularExpressions;
+
+namespace osu_tracker.api
 {
     class Score
     {
@@ -48,8 +54,39 @@
                 case "C":
                     return "https://imgur.com/fL372Ks.png";
 
-                default:
+                case "D":
                     return "https://imgur.com/Dxlcytu.png";
+
+                // F (페일)
+                default:
+                    return "https://imgur.com/C0FLjUs.png";
+            }
+        }
+
+        public static Score UserRecent(object username)
+        {
+            User user;
+
+            try
+            {
+                username = Regex.Replace(username.ToString(), @"[^0-9 a-z A-Z \s \[ \] \- _]+", "").Trim(); // 닉네임이나 id에 포함 불가능한 문자 삭제
+                string userJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user?k={0}&u={1}", Program.api_key, username)); // api에 유저 정보 요청
+
+                user = JsonConvert.DeserializeObject<List<User>>(userJson)[0];
+            }
+            catch
+            {
+                throw new Exception("플레이어를 찾을 수 없습니다.");
+            }
+
+            try
+            {
+                string userRecentJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user_recent?k={0}&u={1}&limit=1", Program.api_key, username)); // api에 유저 정보 요청
+                return JsonConvert.DeserializeObject<List<Score>>(userRecentJson)[0];
+            }
+            catch
+            {
+                throw new Exception("최근 24시간 플레이 기록이 없습니다.");
             }
         }
     }
