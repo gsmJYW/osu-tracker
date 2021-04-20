@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using osu_tracker.api;
-using osu_tracker.embed;
+using osu_tracker.image;
 
 namespace osu_tracker
 {
@@ -118,9 +116,14 @@ namespace osu_tracker
                         continue;
                     }
 
-                    BestEmbed scoreEmbed = new BestEmbed(userBest);
-                    DataTable guildTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = '{0}'", user.user_id);
+                    using MemoryStream memoryStream = new MemoryStream();
 
+                    ScoreImage recentImage = new ScoreImage(userBest);
+                    recentImage.DrawImage().Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    DataTable guildTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = '{0}'", user.user_id);
+                    
                     foreach (DataRow guildRow in guildTable.Rows)
                     {
                         ulong guild_id = ulong.Parse(guildRow["guild_id"].ToString());
@@ -129,7 +132,7 @@ namespace osu_tracker
                         try
                         {
                             SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
-                            await osuTrackerChannel.SendMessageAsync(embed: scoreEmbed.Build());
+                            await osuTrackerChannel.SendFileAsync(memoryStream, "userBest.png", "");
                         }
                         catch (Exception e)
                         {
