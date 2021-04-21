@@ -8,12 +8,12 @@ namespace osu_tracker
     {
         public static MySqlConnection conn;
 
-        public Sql(string server, string port, string database, string uid, string pwd, string charset)
+        public Sql(string server, string port, string database, string uid, string pwd)
         {
             string connStr = string.Format
             (
-                "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet={5}",
-                server, port, database, uid, pwd, charset
+                "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet=utf8",
+                server, port, database, uid, pwd
             );
 
             conn = new MySqlConnection(connStr);
