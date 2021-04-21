@@ -19,7 +19,7 @@ namespace osu_tracker
         private CommandService _commands;
         private IServiceProvider _services;
 
-        public static string api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password, mysql_charset;
+        public static string api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password, asset_path;
 
         static void Main(string[] args)
         {
@@ -38,30 +38,30 @@ namespace osu_tracker
             catch
             {
                 Console.WriteLine("프로그램 실행 시 다음 매개변수가 필요합니다:\n" +
-                    "[osu!API v1 키] [디스코드 봇 토큰] [MySQL 서버 주소] [MySQL 포트 번호] [MySQL DB 이름] [MySQL 유저 id] [MySQL 비밀번호] <MySQL 문자 인코딩>"
+                    "[osu!API v1 키] [디스코드 봇 토큰] [MySQL 서버 주소] [MySQL 포트 번호] [MySQL DB 이름] [MySQL 유저 id] [MySQL 비밀번호]"
                     );
                 return;
             }
 
-            // charset 기본값 UTF-8
+            // mysql 연결
             try
             {
-                mysql_charset = args[7];
+                new Sql(mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password);
             }
-            catch
-            {
-                mysql_charset = "UTF8";
-            }
-
-            // mysql 연결 시도
-            try
-            {
-                new Sql(mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password, mysql_charset);
-            }
-            // 실패 시 종료
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                return;
+            }
+
+            // 에셋 로드
+            try
+            {
+                ScoreImage.LoadAssets();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
                 return;
             }
 
