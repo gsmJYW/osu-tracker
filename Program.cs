@@ -19,7 +19,7 @@ namespace osu_tracker
         private CommandService _commands;
         private IServiceProvider _services;
 
-        public static string api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password, asset_path;
+        public static string api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password;
 
         static void Main(string[] args)
         {
