@@ -160,7 +160,7 @@ namespace osu_tracker.image
             Rectangle rightBottom = new Rectangle()
             {
                 Width = wallpaper.Width - 25,
-                Height = wallpaper.Height - 29,
+                Height = wallpaper.Height - 28,
                 X = 0,
                 Y = 0
             };
