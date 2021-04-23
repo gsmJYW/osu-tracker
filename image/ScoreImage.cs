@@ -47,6 +47,7 @@ namespace osu_tracker.image
             SaveImage("hit50", "https://imgur.com/oCrtIJU.png");
             SaveImage("hit0", "https://imgur.com/rOcF4GM.png");
 
+            SaveImage("star", "https://imgur.com/PxYvnx7.png");
             SaveImage("avatar-guest", "https://osu.ppy.sh/images/layout/avatar-guest@2x.png");
         }
 
@@ -82,6 +83,7 @@ namespace osu_tracker.image
 
             Font large = new Font("Verdana", 19, FontStyle.Regular);
             Font medium = new Font("Verdana", 14, FontStyle.Regular);
+            Font arrow = new Font("Arial", 14, FontStyle.Regular);
 
             string songName = beatmap.artist + " - " + beatmap.title;
 
@@ -109,7 +111,9 @@ namespace osu_tracker.image
                 index++;
             }
 
-            graphics.DrawString(string.Format("{0:0.00}", beatmap.difficultyrating) + "*", large, new SolidBrush(Color.Yellow), new Point(238 + (int)diffNameSize.Width + index * 45, 59));
+            SizeF starRatingSize = graphics.MeasureString(string.Format("{0:0.00}", beatmap.difficultyrating), large);
+            graphics.DrawString(string.Format("{0:0.00}", beatmap.difficultyrating), large, new SolidBrush(Color.Yellow), new Point(238 + (int)diffNameSize.Width + index * 45, 59));
+            graphics.DrawImage(Image.FromStream(asset["star"]), 238 + diffNameSize.Width + index * 45 + starRatingSize.Width, 63, 27, 27);
 
             Rectangle scoreRec = new Rectangle()
             {
@@ -126,7 +130,7 @@ namespace osu_tracker.image
                 X = 0,
                 Y = 58
             };
-
+            
             graphics.DrawString(score.score.ToString(), large, new SolidBrush(Color.White), scoreRec, new StringFormat()
             {
                 Alignment = StringAlignment.Far,
@@ -139,24 +143,24 @@ namespace osu_tracker.image
                 LineAlignment = StringAlignment.Near
             });
 
-            graphics.DrawImage(Image.FromStream(asset["hit300"]), 206, 108, 51.5f, 30);
-            graphics.DrawString("x" + score.count300, medium, new SolidBrush(Color.White), new Point(260, 113));
+            graphics.DrawImage(Image.FromStream(asset["hit300"]), 206, 110, 51.5f, 30);
+            graphics.DrawString("x" + score.count300, medium, new SolidBrush(Color.White), new Point(260, 115));
 
-            graphics.DrawImage(Image.FromStream(asset["hit100"]), 208, 150, 48.5f, 28.5f);
-            graphics.DrawString("x" + score.count100, medium, new SolidBrush(Color.White), new Point(260, 155));
+            graphics.DrawImage(Image.FromStream(asset["hit100"]), 208, 152, 48.5f, 28.5f);
+            graphics.DrawString("x" + score.count100, medium, new SolidBrush(Color.White), new Point(260, 157));
 
             graphics.DrawString(string.Format("x{0}/{1}", score.maxcombo, beatmap.max_combo), large, new SolidBrush(Color.White), new Point(208, 191));
 
-            graphics.DrawImage(Image.FromStream(asset["hit50"]), 326, 108, 35.5f, 28.5f);
-            graphics.DrawString("x" + score.count50, medium, new SolidBrush(Color.White), new Point(364, 113));
+            graphics.DrawImage(Image.FromStream(asset["hit50"]), 326, 110, 35.5f, 28.5f);
+            graphics.DrawString("x" + score.count50, medium, new SolidBrush(Color.White), new Point(364, 115));
 
-            graphics.DrawImage(Image.FromStream(asset["hit0"]), 328, 148, 30, 30);
-            graphics.DrawString("x" + score.countmiss, medium, new SolidBrush(Color.White), new Point(364, 155));
+            graphics.DrawImage(Image.FromStream(asset["hit0"]), 328, 150, 30, 30);
+            graphics.DrawString("x" + score.countmiss, medium, new SolidBrush(Color.White), new Point(364, 157));
 
             Rectangle rightBottom = new Rectangle()
             {
-                Width = wallpaper.Width - 27,
-                Height = wallpaper.Height - 27,
+                Width = wallpaper.Width - 25,
+                Height = wallpaper.Height - 29,
                 X = 0,
                 Y = 0
             };
@@ -174,41 +178,41 @@ namespace osu_tracker.image
                     profile = Image.FromStream(asset["avatar-guest"]);
                 }
 
-                graphics.DrawImage(profile, 423, 114, 100, 100);
-                graphics.DrawRectangle(new Pen(new SolidBrush(Color.White), 3), 421.5f, 112.5f, 103, 103);
+                graphics.DrawImage(profile, 423, 115, 100, 100);
+                graphics.DrawRectangle(new Pen(new SolidBrush(Color.White), 3), 421.5f, 113.5f, 103, 103);
 
-                graphics.DrawString(user.username, large, new SolidBrush(Color.White), 536, 106);
+                graphics.DrawString(user.username, large, new SolidBrush(Color.White), 536, 104);
 
                 SizeF rankSize = graphics.MeasureString("#" + userBest.pp_rank, large);
                 SizeF ppSize = graphics.MeasureString(Math.Round(userBest.pp_raw) + "PP", large);
 
-                graphics.DrawString("#" + userBest.pp_rank, large, new SolidBrush(Color.White), 533, 148);
+                graphics.DrawString("#" + userBest.pp_rank, large, new SolidBrush(Color.White), 533, 146);
                 int gainedRank = userBest.previous_pp_rank - userBest.pp_rank;
 
                 if (gainedRank >= 0)
                 {
-                    graphics.DrawString("▲", medium, new SolidBrush(Color.LimeGreen), 535 + rankSize.Width, 153);
+                    graphics.DrawString("▲", arrow, new SolidBrush(Color.LimeGreen), 538 + rankSize.Width, 153);
                 }
                 else
                 {
-                    graphics.DrawString("▼", medium, new SolidBrush(Color.IndianRed), 535 + rankSize.Width, 153);
+                    graphics.DrawString("▼", arrow, new SolidBrush(Color.IndianRed), 538 + rankSize.Width, 153);
                 }
 
-                graphics.DrawString(Math.Abs(gainedRank).ToString(), medium, new SolidBrush(Color.White), 553 + rankSize.Width, 152);
+                graphics.DrawString(Math.Abs(gainedRank).ToString(), medium, new SolidBrush(Color.White), 556 + rankSize.Width, 152);
 
-                graphics.DrawString(Math.Round(userBest.pp_raw) + "PP", large, new SolidBrush(Color.White), 535, 191);
+                graphics.DrawString(Math.Round(userBest.pp_raw) + "PP", large, new SolidBrush(Color.White), 535, 189);
                 int gainedPP = (int)Math.Round(userBest.pp_raw) - (int)Math.Round(userBest.previous_pp_raw);
 
                 if (gainedPP >= 0)
                 {
-                    graphics.DrawString("▲", medium, new SolidBrush(Color.LimeGreen), 535 + ppSize.Width, 195);
+                    graphics.DrawString("▲", arrow, new SolidBrush(Color.LimeGreen), 538 + ppSize.Width, 195);
                 }
                 else
                 {
-                    graphics.DrawString("▼", medium, new SolidBrush(Color.IndianRed), 535 + ppSize.Width, 195);
+                    graphics.DrawString("▼", arrow, new SolidBrush(Color.IndianRed), 538 + ppSize.Width, 195);
                 }
 
-                graphics.DrawString(Math.Abs(gainedPP).ToString(), medium, new SolidBrush(Color.White), 553 + ppSize.Width, 194);
+                graphics.DrawString(Math.Abs(gainedPP).ToString(), medium, new SolidBrush(Color.White), 556 + ppSize.Width, 194);
 
                 graphics.DrawString(Math.Round(score.pp) + "PP", large, new SolidBrush(Color.White), rightBottom, new StringFormat()
                 {
