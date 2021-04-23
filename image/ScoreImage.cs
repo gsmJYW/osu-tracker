@@ -154,13 +154,13 @@ namespace osu_tracker.image
             graphics.DrawImage(Image.FromStream(asset["hit50"]), 326, 110, 35.5f, 28.5f);
             graphics.DrawString("x" + score.count50, medium, new SolidBrush(Color.White), new Point(364, 115));
 
-            graphics.DrawImage(Image.FromStream(asset["hit0"]), 328, 150, 30, 30);
+            graphics.DrawImage(Image.FromStream(asset["hit0"]), 328, 152, 30, 30);
             graphics.DrawString("x" + score.countmiss, medium, new SolidBrush(Color.White), new Point(364, 157));
 
             Rectangle rightBottom = new Rectangle()
             {
                 Width = wallpaper.Width - 25,
-                Height = wallpaper.Height - 28,
+                Height = wallpaper.Height - 27,
                 X = 0,
                 Y = 0
             };
@@ -178,41 +178,41 @@ namespace osu_tracker.image
                     profile = Image.FromStream(asset["avatar-guest"]);
                 }
 
-                graphics.DrawImage(profile, 423, 115, 100, 100);
-                graphics.DrawRectangle(new Pen(new SolidBrush(Color.White), 3), 421.5f, 113.5f, 103, 103);
+                graphics.DrawImage(profile, 423, 116, 100, 100);
+                graphics.DrawRectangle(new Pen(new SolidBrush(Color.White), 3), 421.5f, 114.5f, 103, 103);
 
-                graphics.DrawString(user.username, large, new SolidBrush(Color.White), 536, 104);
+                graphics.DrawString(user.username, large, new SolidBrush(Color.White), 536, 105);
 
                 SizeF rankSize = graphics.MeasureString("#" + userBest.pp_rank, large);
                 SizeF ppSize = graphics.MeasureString(Math.Round(userBest.pp_raw) + "PP", large);
 
-                graphics.DrawString("#" + userBest.pp_rank, large, new SolidBrush(Color.White), 533, 146);
+                graphics.DrawString("#" + userBest.pp_rank, large, new SolidBrush(Color.White), 533, 148);
                 int gainedRank = userBest.previous_pp_rank - userBest.pp_rank;
 
                 if (gainedRank >= 0)
                 {
-                    graphics.DrawString("▲", arrow, new SolidBrush(Color.LimeGreen), 538 + rankSize.Width, 153);
+                    graphics.DrawString("▲", arrow, new SolidBrush(Color.LimeGreen), 538 + rankSize.Width, 156);
                 }
                 else
                 {
-                    graphics.DrawString("▼", arrow, new SolidBrush(Color.IndianRed), 538 + rankSize.Width, 153);
+                    graphics.DrawString("▼", arrow, new SolidBrush(Color.IndianRed), 538 + rankSize.Width, 156);
                 }
 
-                graphics.DrawString(Math.Abs(gainedRank).ToString(), medium, new SolidBrush(Color.White), 556 + rankSize.Width, 152);
+                graphics.DrawString(Math.Abs(gainedRank).ToString(), medium, new SolidBrush(Color.White), 556 + rankSize.Width, 155);
 
-                graphics.DrawString(Math.Round(userBest.pp_raw) + "PP", large, new SolidBrush(Color.White), 535, 189);
+                graphics.DrawString(Math.Round(userBest.pp_raw) + "PP", large, new SolidBrush(Color.White), 535, 191);
                 int gainedPP = (int)Math.Round(userBest.pp_raw) - (int)Math.Round(userBest.previous_pp_raw);
 
                 if (gainedPP >= 0)
                 {
-                    graphics.DrawString("▲", arrow, new SolidBrush(Color.LimeGreen), 538 + ppSize.Width, 195);
+                    graphics.DrawString("▲", arrow, new SolidBrush(Color.LimeGreen), 538 + ppSize.Width, 197);
                 }
                 else
                 {
-                    graphics.DrawString("▼", arrow, new SolidBrush(Color.IndianRed), 538 + ppSize.Width, 195);
+                    graphics.DrawString("▼", arrow, new SolidBrush(Color.IndianRed), 538 + ppSize.Width, 197);
                 }
 
-                graphics.DrawString(Math.Abs(gainedPP).ToString(), medium, new SolidBrush(Color.White), 556 + ppSize.Width, 194);
+                graphics.DrawString(Math.Abs(gainedPP).ToString(), medium, new SolidBrush(Color.White), 556 + ppSize.Width, 196);
 
                 graphics.DrawString(Math.Round(score.pp) + "PP", large, new SolidBrush(Color.White), rightBottom, new StringFormat()
                 {
