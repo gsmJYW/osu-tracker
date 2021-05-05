@@ -6,21 +6,15 @@ namespace osu_tracker
 {
     class Sql
     {
-        public static MySqlConnection conn;
+        private static string connStr;
 
-        public Sql(string server, string port, string database, string uid, string pwd)
+        public static void Connect(string server, string port, string database, string uid, string pwd)
         {
-            string connStr = string.Format
+            connStr = string.Format
             (
-                "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet=utf8",
+                "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet=utf8;",
                 server, port, database, uid, pwd
             );
-
-            conn = new MySqlConnection(connStr);
-
-            // SQL 접속 시도 (실패 시 예외)
-            conn.Open();
-            conn.Close();
         }
 
         public static DataTable Get(string str, params object[] args)
@@ -29,11 +23,13 @@ namespace osu_tracker
             MySqlDataAdapter adpt;
             DataSet ds = new DataSet();
 
+            MySqlConnection conn = new MySqlConnection(connStr);
+
             try
             {
-                query = string.Format(str, args);
                 conn.Open();
 
+                query = string.Format(str, args);
                 adpt = new MySqlDataAdapter(query, conn);
 
                 if (adpt == null)
@@ -57,11 +53,13 @@ namespace osu_tracker
         {
             string query;
 
+            MySqlConnection conn = new MySqlConnection(connStr);
+
             try
             {
-                query = string.Format(str, args);
                 conn.Open();
 
+                query = string.Format(str, args);
                 MySqlCommand command = new MySqlCommand(query, conn);
                 command.ExecuteNonQuery();
             }
