@@ -26,11 +26,11 @@ namespace osu_tracker
             return DateTimeOffset.FromUnixTimeMilliseconds(dateTimeMs);
         }
         
-        // 모드에 해당하는 문자열
-        public static string ToModString(this int mods)
+        // 2진법으로 된 모드 목록을 문자열 리스트로 반환
+        public static List<string> ToModList(this int mods)
         {
             bool[] modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
-            string modString = "";
+            List<string> modList = new List<string>();
 
             for (int i = 1; i <= modBinary.Length; i++)
             {
@@ -39,97 +39,90 @@ namespace osu_tracker
                     switch (i)
                     {
                         case 1:
-                            modString += "NF";
+                            modList.Add("NF");
                             break;
 
                         case 2:
-                            modString += "EZ";
+                            modList.Add("EZ");
                             break;
 
-                        case 3:
-                            modString += "TD";
-                            break;
+                        //case 3:
+                        //    modList.Add("TD");
+                        //    break;
 
                         case 4:
-                            modString += "HD";
+                            modList.Add("HD");
                             break;
 
                         case 5:
-                            modString += "HR";
+                            modList.Add("HR");
                             break;
 
                         case 6:
-                            modString += "SD";
+                            modList.Add("SD");
                             break;
 
                         case 7:
-                            modString += "DT";
+                            modList.Add("DT");
                             break;
 
                         case 9:
-                            modString += "HT";
+                            modList.Add("HT");
                             break;
 
                         case 10:
-                            modString += "NC";
+                            modList.Add("NC");
                             break;
 
                         case 11:
-                            modString += "FL";
+                            modList.Add("FL");
                             break;
 
                         case 13:
-                            modString += "SO";
+                            modList.Add("SO");
                             break;
 
                         case 15:
-                            modString += "PF";
+                            modList.Add("PF");
                             break;
                     }
                 }
             }
 
-            if (modString.Contains("NC"))
-                modString = modString.Replace("DT", "");
+            if (modList.Contains("NC"))
+                modList.Remove("DT");
 
-            if (modString.Contains("PF"))
-                modString = modString.Replace("SD", "");
+            if (modList.Contains("PF"))
+                modList.Remove("SD");
 
-            return modString;
+            return modList;
         }
 
         // 특정 이름을 가진 채널을 검색, 있을 경우 검색된 채널 반환, 없을 경우 생성한 후 생성한 채널 반환
         public async static Task<SocketTextChannel> CreateChannelIfNotExist(this SocketGuild guild, string name)
         {
-            try
+            SocketTextChannel osuTrackerChannel = null;
+            bool isThereOsuTrackerChannel = false;
+
+            IReadOnlyCollection<SocketTextChannel> channelList = guild.TextChannels;
+
+            foreach (SocketTextChannel channel in channelList)
             {
-                SocketTextChannel osuTrackerChannel = null;
-                bool isThereOsuTrackerChannel = false;
-
-                IReadOnlyCollection<SocketTextChannel> channelList = guild.TextChannels;
-
-                foreach (SocketTextChannel channel in channelList)
+                if (channel.Name.ToLower() == name.ToLower())
                 {
-                    if (channel.Name.ToLower() == name.ToLower())
-                    {
-                        isThereOsuTrackerChannel = true;
-                        osuTrackerChannel = channel;
-                        break;
-                    }
+                    isThereOsuTrackerChannel = true;
+                    osuTrackerChannel = channel;
+                    break;
                 }
-
-                if (!isThereOsuTrackerChannel)
-                {
-                    ulong osuTrackerChannelId = (await guild.CreateTextChannelAsync("osu-tracker")).Id;
-                    osuTrackerChannel = guild.GetTextChannel(osuTrackerChannelId);
-                }
-
-                return osuTrackerChannel;
             }
-            catch (Exception e)
+
+            if (!isThereOsuTrackerChannel)
             {
-                throw e;
+                ulong osuTrackerChannelId = (await guild.CreateTextChannelAsync("osu-tracker")).Id;
+                osuTrackerChannel = guild.GetTextChannel(osuTrackerChannelId);
             }
+
+            return osuTrackerChannel;
         }
     }
 }
