@@ -1,5 +1,6 @@
 ﻿using Discord;
 using osu_tracker.api;
+using System.Collections.Generic;
 
 namespace osu_tracker.embed
 {
@@ -20,11 +21,12 @@ namespace osu_tracker.embed
 
                 if (userBest.mainMods == 0)
                 {
-                    mainModString = "노모드";
+                    mainModString = "NM";
                 }
                 else
                 {
-                    mainModString = userBest.mainMods.ToModString();
+                    List<string> mainModList = userBest.mainMods.ToModList();
+                    mainModString = string.Join("", mainModList);
                 }
             }
 
