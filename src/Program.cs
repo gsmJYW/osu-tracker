@@ -43,25 +43,14 @@ namespace osu_tracker
                 return;
             }
 
-            // mysql 연결
             try
             {
-                new Sql(mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return;
-            }
-
-            // 에셋 로드
-            try
-            {
+                Sql.Connect(mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password);
                 ScoreImage.LoadAssets();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
                 return;
             }
 
@@ -116,12 +105,7 @@ namespace osu_tracker
                         continue;
                     }
 
-                    using MemoryStream memoryStream = new MemoryStream();
-
                     ScoreImage recentImage = new ScoreImage(userBest);
-                    recentImage.DrawImage().Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-
                     DataTable guildTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = '{0}'", user.user_id);
                     
                     foreach (DataRow guildRow in guildTable.Rows)
@@ -132,6 +116,10 @@ namespace osu_tracker
                         try
                         {
                             SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
+
+                            MemoryStream memoryStream = new MemoryStream();
+                            recentImage.DrawImage().Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                            memoryStream.Seek(0, SeekOrigin.Begin);
                             await osuTrackerChannel.SendFileAsync(memoryStream, "userBest.png", "");
                         }
                         catch (Exception e)
@@ -166,7 +154,8 @@ namespace osu_tracker
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, bot_token);
             await _client.StartAsync();
-            
+            await _client.SetGameAsync(">help");
+
             await CheckNewBest();
             await Task.Delay(-1);
         }
@@ -179,12 +168,7 @@ namespace osu_tracker
             try
             {
                 // 관리자 권한이 있는지 확인
-                if (permission.Administrator)
-                {
-                    await guild.DefaultChannel.SendMessageAsync(_client.CurrentUser.Mention + "를 초대해주셔서 감사합니다.\n**>help**를 입력하여 도움말을 보실 수 있습니다.");
-                    SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
-                }
-                else
+                if (!permission.Administrator)
                 {
                     await guild.DefaultChannel.SendMessageAsync("https://discord.com/api/oauth2/authorize?client_id=755681499214381136&permissions=8&scope=bot");
                     await guild.DefaultChannel.SendMessageAsync(_client.CurrentUser.Mention + "은(는) **관리자 권한**이 필요합니다.\n권한이 부족해 서버에서 내보냅니다, 다시 초대해주세요.");
