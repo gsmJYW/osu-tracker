@@ -30,17 +30,17 @@ namespace osu_tracker.image
             SaveImage("D", "https://imgur.com/Dxlcytu.png");
             SaveImage("F", "https://imgur.com/C0FLjUs.png");
 
-            SaveImage("nofail", "https://imgur.com/r5hvACb.png");
-            SaveImage("easy", "https://imgur.com/4fV6ILw.png");
-            SaveImage("hidden", "https://imgur.com/JF40zcs.png");
-            SaveImage("hardrock", "https://imgur.com/aMDWaJX.png");
-            SaveImage("suddendeath", "https://imgur.com/7nAvSh0.png");
-            SaveImage("doubletime", "https://imgur.com/jJwtoMI.png");
-            SaveImage("halftime", "https://imgur.com/cyHBpFo.png");
-            SaveImage("nightcore", "https://imgur.com/6XXtQp0.png");
-            SaveImage("flashlight", "https://imgur.com/OXPXkI5.png");
-            SaveImage("spunout", "https://imgur.com/QrDW6vh.png");
-            SaveImage("perfect", "https://imgur.com/upWagxt.png");
+            SaveImage("NF", "https://imgur.com/r5hvACb.png");
+            SaveImage("EZ", "https://imgur.com/4fV6ILw.png");
+            SaveImage("HD", "https://imgur.com/JF40zcs.png");
+            SaveImage("HR", "https://imgur.com/aMDWaJX.png");
+            SaveImage("SD", "https://imgur.com/7nAvSh0.png");
+            SaveImage("DT", "https://imgur.com/jJwtoMI.png");
+            SaveImage("HT", "https://imgur.com/cyHBpFo.png");
+            SaveImage("NC", "https://imgur.com/6XXtQp0.png");
+            SaveImage("FL", "https://imgur.com/OXPXkI5.png");
+            SaveImage("SO", "https://imgur.com/QrDW6vh.png");
+            SaveImage("PF", "https://imgur.com/upWagxt.png");
 
             SaveImage("hit300", "https://imgur.com/mP9f2pW.png");
             SaveImage("hit100", "https://imgur.com/NYYpHxv.png");
@@ -101,7 +101,7 @@ namespace osu_tracker.image
 
             graphics.DrawString("[" + beatmap.version + "]", large, new SolidBrush(Color.White), new Point(207, 58));
 
-            List<string> modList = ToModList(score.enabled_mods);
+            List<string> modList = score.enabled_mods.ToModList();
             SizeF diffNameSize = graphics.MeasureString(beatmap.version, large);
             int index = 0;
 
@@ -249,84 +249,6 @@ namespace osu_tracker.image
             Image image = ParseImage(url);
             asset.Add(key, new MemoryStream());
             image.Save(asset[key], ImageFormat.Png);
-        }
-
-        // 모드에 해당하는 아이콘 링크
-        public static List<string> ToModList(int mods)
-        {
-            bool[] modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
-            List<string> modList = new List<string>();
-
-            for (int i = 1; i <= modBinary.Length; i++)
-            {
-                if (modBinary[modBinary.Length - i])
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            modList.Add("nofail");
-                            break;
-
-                        case 2:
-                            modList.Add("easy");
-                            break;
-
-                        /*
-                        case 3:
-                            modList.Add("TD");
-                            break;
-                        */
-
-                        case 4:
-                            modList.Add("hidden");
-                            break;
-
-                        case 5:
-                            modList.Add("hardrock");
-                            break;
-
-                        case 6:
-                            modList.Add("suddendeath");
-                            break;
-
-                        case 7:
-                            modList.Add("doubletime");
-                            break;
-
-                        case 9:
-                            modList.Add("halftime");
-                            break;
-
-                        case 10:
-                            modList.Add("nightcore");
-                            break;
-
-                        case 11:
-                            modList.Add("flashlight");
-                            break;
-
-                        case 13:
-                            modList.Add("spunout");
-                            break;
-
-                        case 15:
-                            modList.Add("perfect");
-                            break;
-                    }
-                }
-            }
-
-            if (modList.Contains("NC"))
-            {
-                modList.Remove("DT");
-            }
-
-            if (modList.Contains("PF"))
-            {
-                modList.Remove("SD");
-            }
-
-            return modList;
         }
     }
 }
