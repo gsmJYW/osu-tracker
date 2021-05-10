@@ -17,7 +17,7 @@ namespace osu_tracker.embed
 
             if (userTable.Rows.Count == 0)
             {
-                AddField("이 채널에서 추적 중인 플레이어가 없습니다.", ">track [유저명/유저 id]로 추가할 수 있습니다.");
+                AddField("이 서버에서 추적 중인 플레이어가 없습니다.", "`>track 유저명`으로 추가할 수 있습니다.");
             }
             else
             {
