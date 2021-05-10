@@ -117,7 +117,7 @@ namespace osu_tracker
                         {
                             SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
 
-                            MemoryStream memoryStream = new MemoryStream();
+                            using MemoryStream memoryStream = new MemoryStream();
                             recentImage.DrawImage().Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
                             memoryStream.Seek(0, SeekOrigin.Begin);
                             await osuTrackerChannel.SendFileAsync(memoryStream, "userBest.png", "");
