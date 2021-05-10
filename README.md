@@ -10,6 +10,12 @@
 ```sql
 CREATE DATABASE `osutracker` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
+CREATE TABLE `users` (
+  `discord_id` char(18) NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`discord_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `osutracker`.`targets` (
   `user_id` int(11) NOT NULL,
   `guild_id` char(18) NOT NULL,
