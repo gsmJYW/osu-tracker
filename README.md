@@ -10,7 +10,7 @@
 ```sql
 CREATE DATABASE `osutracker` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-CREATE TABLE `users` (
+CREATE TABLE `osutracker`.`users` (
   `discord_id` char(18) NOT NULL,
   `user_id` int NOT NULL,
   PRIMARY KEY (`discord_id`)
