@@ -9,10 +9,8 @@ namespace osu_tracker
     public static class Extension
     {
         // double 소숫점 3자리까지 비교
-        public static bool IsCloseTo(this double a, double b)
-        {
-            return Math.Abs(a - b) < 0.0001;
-        }
+        public static bool IsCloseTo(this double a, double b) 
+            => Math.Abs(a - b) < 0.0001;
 
         // 문자열로 된 시각을 오프셋으로 변환
         public static DateTimeOffset ToDateTimeOffset(this string date)

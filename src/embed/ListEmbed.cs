@@ -21,12 +21,14 @@ namespace osu_tracker.embed
             }
             else
             {
-                List<User> userList = new List<User>();
+                // ReSharper disable once HeapView.ClosureAllocation
+                // ReSharper disable once HeapView.ObjectAllocation.Evident
+                var userList = new List<User>();
 
                 // db에서 받아온 DataTable을 UserInfo 리스트로 변환
                 Parallel.For(0, userTable.Rows.Count,
                     (i) => {
-                        User user = User.Search(userTable.Rows[i]["user_id"].ToString());
+                        var user = User.Search(userTable.Rows[i]["user_id"].ToString());
 
                         // 기록이 없어서 순위가 0인 플레이어를 맨 아래로 정렬하기 위해 순위를 int 최댓값으로 임시 지정
                         if (user.pp_rank == 0)
@@ -40,7 +42,7 @@ namespace osu_tracker.embed
                 // 랭크 순으로 정렬해서 embed에 추가
                 userList.Sort((x, y) => x.pp_rank.CompareTo(y.pp_rank));
 
-                foreach (User user in userList)
+                foreach (var user in userList)
                 {
                     // int 최댓값으로 바꿨던 순위를 0으로 복구
                     if (user.pp_rank == int.MaxValue)
@@ -48,10 +50,10 @@ namespace osu_tracker.embed
                         user.pp_rank = 0;
                     }
 
-                    AddField(user.username, string.Format("{0}pp (#{1})",
-                        user.pp_raw == 0 && user.pp_rank != 0 ? "?" : string.Format("{0:0.##}", user.pp_raw),
-                        user.pp_rank == 0 ? "?" : user.pp_rank.ToString()
-                        ), true
+                    AddField(
+                        user.username, 
+                        $"{(user.pp_raw == 0 && user.pp_rank != 0 ? "?" : $"{user.pp_raw:0.##}")}pp (#{(user.pp_rank == 0 ? "?" : user.pp_rank.ToString())})", 
+                        true
                     );
                 }
             }

@@ -26,7 +26,8 @@ namespace osu_tracker.api
             try
             {
                 username = Regex.Replace(username.ToString(), @"[^0-9 a-z A-Z \s \[ \] \- _]+", "").Trim(); // 닉네임이나 id에 포함 불가능한 문자 삭제
-                string userJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user?k={0}&u={1}", Program.api_key, username)); // api에 유저 정보 요청
+                // ReSharper disable once HeapView.ObjectAllocation.Evident
+                var userJson = new WebClient().DownloadString($"https://osu.ppy.sh/api/get_user?k={Program.api_key}&u={username}"); // api에 유저 정보 요청
 
                 return JsonConvert.DeserializeObject<List<User>>(userJson)[0];
             }

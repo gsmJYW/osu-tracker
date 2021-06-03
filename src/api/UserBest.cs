@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+// ReSharper disable HeapView.BoxingAllocation
 
 namespace osu_tracker.api
 {
-    class UserBest
+    internal class UserBest
     {
-        List<Score> bestList;
-        int user_id;
+        readonly List<Score> bestList;
+        readonly int user_id;
 
         public int mainMods;
-        public double pp_sum = 0.0;
+        public readonly double pp_sum = 0.0;
         public Score newBest = null;
 
         public double previous_pp_raw, pp_raw;
@@ -23,10 +24,11 @@ namespace osu_tracker.api
         {
             this.user_id = user_id;
 
-            string userBest = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_user_best?k={0}&u={1}&limit=100", Program.api_key, user_id)); // api에 베퍼포 정보 요청
+            // ReSharper disable once HeapView.ObjectAllocation.Evident
+            var userBest = new WebClient().DownloadString($"https://osu.ppy.sh/api/get_user_best?k={Program.api_key}&u={user_id}&limit=100"); // api에 베퍼포 정보 요청
             bestList = JsonConvert.DeserializeObject<List<Score>>(userBest); // 베퍼포 100개를 Score 리스트로 변환
 
-            foreach (Score best in bestList)
+            foreach (var best in bestList)
             {
                 pp_sum += best.pp;
             }
@@ -35,22 +37,21 @@ namespace osu_tracker.api
         // 새로운 베퍼포
         public void GetNewBest()
         {
-            double previous_pp_sum;
-
-            User user = User.Search(user_id);
+            var user = User.Search(user_id);
 
             pp_raw = user.pp_raw;
             pp_rank = user.pp_rank;
 
-            DataTable userTableSearch = Sql.Get("SELECT user_id FROM pphistories WHERE user_id = {0}", user_id); // 점수 정보에 해당 유저가 있는지 확인
-            DataRow ppHistory = Sql.Get("SELECT * FROM pphistories WHERE user_id = {0}", user_id).Rows[0];
+            var userTableSearch = Sql.Get("SELECT user_id FROM pphistories WHERE user_id = {0}", user_id); // 점수 정보에 해당 유저가 있는지 확인
+            var ppHistory = Sql.Get("SELECT * FROM pphistories WHERE user_id = {0}", user_id).Rows[0];
 
-            previous_pp_sum = Convert.ToDouble(ppHistory["pp_sum"]);
+            var previous_pp_sum = Convert.ToDouble(ppHistory["pp_sum"]);
             previous_pp_raw = Convert.ToDouble(ppHistory["pp_raw"]);
             previous_pp_rank = Convert.ToInt32(ppHistory["pp_rank"]);
 
             if (!pp_sum.IsCloseTo(previous_pp_sum))
             {
+                // ReSharper disable once HeapView.ObjectAllocation
                 newBest = bestList.OrderByDescending(
                     x => DateTime.ParseExact(x.date, "yyyy-MM-dd HH:mm:ss", null).AddHours(9)
                 ).FirstOrDefault();
@@ -58,26 +59,28 @@ namespace osu_tracker.api
                 newBest.index = bestList.IndexOf(newBest);
             }
 
+            // ReSharper disable once HeapView.ObjectAllocation
             Sql.Execute("UPDATE pphistories SET pp_sum = {0}, pp_raw = {1}, pp_rank = {2} WHERE user_id = {3}", pp_sum, pp_raw, pp_rank, user_id);
         }
 
         // 주력 모드
         public void GetMainMods()
         {
-            int weight = 0;
-            Dictionary<int, double> modList = new Dictionary<int, double>();
+            var weight = 0;
+            // ReSharper disable once HeapView.ObjectAllocation.Evident
+            var modList = new Dictionary<int, double>();
 
-            List<Score> halfBestList = bestList.GetRange(0, bestList.Count / 2); // 베퍼포 중 만 검사
+            var halfBestList = bestList.GetRange(0, bestList.Count / 2); // 베퍼포 중 만 검사
 
-            foreach (Score best in halfBestList)
+            foreach (var best in halfBestList)
             {
-                int mods = best.enabled_mods;
-                bool[] modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
+                var mods = best.enabled_mods;
+                var modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
 
                 // 불필요한 모드 삭제
-                for (int i = 1; i <= modBinary.Length; i++)
+                for (var i = 1; i <= modBinary.Length; i++)
                 {
-                    if (modBinary[modBinary.Length - i])
+                    if (modBinary[^i])
                     {
                         switch (i)
                         {
@@ -104,7 +107,7 @@ namespace osu_tracker.api
                     }
                 }
 
-                double ppWeighted = best.pp * Math.Pow(0.95, weight);
+                var ppWeighted = best.pp * Math.Pow(0.95, weight);
 
                 try
                 {

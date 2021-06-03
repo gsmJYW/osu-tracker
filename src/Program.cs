@@ -9,6 +9,10 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using osu_tracker.api;
 using osu_tracker.image;
+// ReSharper disable HeapView.ObjectAllocation
+// ReSharper disable HeapView.BoxingAllocation
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable HeapView.ObjectAllocation.Evident
 
 namespace osu_tracker
 {
@@ -62,7 +66,7 @@ namespace osu_tracker
 
         private static async Task CheckNewBest()
         {
-            DataTable userTable = Sql.Get("SELECT user_id FROM targets GROUP BY user_id");
+            var userTable = Sql.Get("SELECT user_id FROM targets GROUP BY user_id");
 
             // 타겟 유저 마다 검사
             foreach (DataRow userRow in userTable.Rows)
@@ -75,8 +79,10 @@ namespace osu_tracker
                     var user = User.Search(uRow);
 
                     // 이전 pp 기록이 있는지 확인
-                    DataTable ppHistorySearchTable = Sql.Get(
+                    // ReSharper disable once HeapView.ObjectAllocation
+                    var ppHistorySearchTable = Sql.Get(
                         "SELECT p.user_id FROM pphistories p, targets t " +
+                        // ReSharper disable once HeapView.BoxingAllocation
                         "WHERE p.user_id = {0} AND p.user_id = t.user_id", user.user_id
                         );
 
@@ -89,7 +95,7 @@ namespace osu_tracker
                         continue;
                     }
 
-                    double previous_pp_raw = Convert.ToDouble(Sql.Get("SELECT pp_raw FROM pphistories WHERE user_id = {0}", user.user_id).Rows[0]["pp_raw"]);
+                    var previous_pp_raw = Convert.ToDouble(Sql.Get("SELECT pp_raw FROM pphistories WHERE user_id = {0}", user.user_id).Rows[0]["pp_raw"]);
 
                     // pp 변화가 없을 경우 다음 타겟 검사
                     if (previous_pp_raw.IsCloseTo(user.pp_raw))
@@ -107,19 +113,19 @@ namespace osu_tracker
                         continue;
                     }
 
-                    ScoreImage recentImage = new ScoreImage(userBest);
-                    DataTable guildTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = '{0}'", user.user_id);
+                    var recentImage = new ScoreImage(userBest);
+                    var guildTable = Sql.Get("SELECT guild_id FROM targets WHERE user_id = '{0}'", user.user_id);
                     
                     foreach (DataRow guildRow in guildTable.Rows)
                     {
-                        ulong guild_id = ulong.Parse(guildRow["guild_id"].ToString());
-                        SocketGuild guild = _client.GetGuild(guild_id);
+                        var guild_id = ulong.Parse(guildRow["guild_id"].ToString());
+                        var guild = _client.GetGuild(guild_id);
 
                         try
                         {
-                            SocketTextChannel osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
+                            var osuTrackerChannel = await guild.CreateChannelIfNotExist("osu-tracker");
 
-                            using MemoryStream memoryStream = new MemoryStream();
+                            await using var memoryStream = new MemoryStream();
                             recentImage.DrawImage().Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
                             memoryStream.Seek(0, SeekOrigin.Begin);
                             await osuTrackerChannel.SendFileAsync(memoryStream, "userBest.png", "");
@@ -183,14 +189,14 @@ namespace osu_tracker
             }
         }
 
-        private Task _client_LeftGuild(SocketGuild guild)
+        private static Task _client_LeftGuild(SocketGuild guild)
         {
             // 서버에서 추방됐거나 서버가 삭제됐을 경우 해당 길드에서 추적하던 유저 제거
             Sql.Execute("DELETE FROM targets WHERE guild_id = '{0}'", guild.Id);
             return Task.CompletedTask;
         }
 
-        private Task _client_Log(LogMessage arg)
+        private static Task _client_Log(LogMessage arg)
         {
             Console.WriteLine(arg);
             return Task.CompletedTask;
@@ -212,8 +218,8 @@ namespace osu_tracker
                 return;
             }
 
-            int argPos = 0;
-            string guild = (message.Channel as SocketGuildChannel).Guild.Id.ToString();
+            var argPos = 0;
+            var guild = (message.Channel as SocketGuildChannel).Guild.Id.ToString();
 
             if (message.HasStringPrefix(">", ref argPos))
             {
@@ -229,7 +235,7 @@ namespace osu_tracker
 
                 if (!result.IsSuccess)
                 {
-                    string err = result.ErrorReason;
+                    var err = result.ErrorReason;
 
                     if (err.Contains("incomplete") || err.Contains("whitespace"))
                     {
