@@ -101,7 +101,7 @@ namespace osu_tracker.image
 
             graphics.DrawString("[" + beatmap.version + "]", large, new SolidBrush(Color.White), new Point(207, 58));
 
-            List<string> modList = score.enabled_mods.ToModList();
+            IEnumerable<string> modList = score.enabled_mods.ToModList();
             SizeF diffNameSize = graphics.MeasureString(beatmap.version, large);
             int index = 0;
 

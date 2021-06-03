@@ -2,7 +2,7 @@
 
 namespace osu_tracker.embed
 {
-    class HelpEmbed : EmbedBuilder
+    internal class HelpEmbed : EmbedBuilder
     {
         public HelpEmbed(string avatarUrl)
         {

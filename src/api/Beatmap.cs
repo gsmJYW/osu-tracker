@@ -18,14 +18,14 @@ namespace osu_tracker.api
         // 비트맵 id로 맵 정보를 불러옴
         public static Beatmap Search(int beatmap_id, int mods)
         {
-            bool[] modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
+            var modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
 
             // 스타레이팅에 영향을 주는 모드들만 계산
-            int difficultyChangingMods = 0;
+            var difficultyChangingMods = 0;
 
-            for (int i = 1; i <= modBinary.Length; i++)
+            for (var i = 1; i <= modBinary.Length; i++)
             {
-                if (modBinary[modBinary.Length - i])
+                if (modBinary[^i])
                 {
                     switch (i)
                     {
@@ -48,7 +48,7 @@ namespace osu_tracker.api
                 }
             }
 
-            string beatmapJson = new WebClient().DownloadString(string.Format("https://osu.ppy.sh/api/get_beatmaps?k={0}&b={1}&mods={2}", Program.api_key, beatmap_id, difficultyChangingMods)); // api에 비트맵 정보 요청
+            var beatmapJson = new WebClient().DownloadString($"https://osu.ppy.sh/api/get_beatmaps?k={Program.api_key}&b={beatmap_id}&mods={difficultyChangingMods}"); // api에 비트맵 정보 요청
             return JsonConvert.DeserializeObject<List<Beatmap>>(beatmapJson)[0];
         }
     }
