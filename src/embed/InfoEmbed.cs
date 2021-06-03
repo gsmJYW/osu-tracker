@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace osu_tracker.embed
 {
-    class InfoEmbed : EmbedBuilder
+    internal class InfoEmbed : EmbedBuilder
     {
         public InfoEmbed(User user)
         {
@@ -25,7 +25,7 @@ namespace osu_tracker.embed
                 }
                 else
                 {
-                    List<string> mainModList = userBest.mainMods.ToModList();
+                    IEnumerable<string> mainModList = userBest.mainMods.ToModList();
                     mainModString = string.Join("", mainModList);
                 }
             }

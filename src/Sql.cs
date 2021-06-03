@@ -4,35 +4,30 @@ using MySql.Data.MySqlClient;
 
 namespace osu_tracker
 {
-    class Sql
+    internal static class Sql
     {
         private static string connStr;
 
         public static void Connect(string server, string port, string database, string uid, string pwd)
         {
-            connStr = string.Format
-            (
-                "Server={0};Port={1};Database={2};Uid={3};Pwd={4};CharSet=utf8;",
-                server, port, database, uid, pwd
-            );
+            connStr = $"Server={server};Port={port};Database={database};Uid={uid};Pwd={pwd};CharSet=utf8;";
         }
 
         public static DataTable Get(string str, params object[] args)
         {
-            string query;
-            MySqlDataAdapter adpt;
-            DataSet ds = new DataSet();
+            var ds = new DataSet();
 
-            MySqlConnection conn = new MySqlConnection(connStr);
+            var conn = new MySqlConnection(connStr);
 
             try
             {
                 conn.Open();
 
-                query = string.Format(str, args);
-                adpt = new MySqlDataAdapter(query, conn);
+                var query = string.Format(str, args);
+                var adpt = new MySqlDataAdapter(query, conn);
 
                 if (adpt == null)
+                    // ReSharper disable once HeuristicUnreachableCode
                     return new DataTable();
 
                 adpt.Fill(ds, "members");
@@ -51,16 +46,14 @@ namespace osu_tracker
 
         public static void Execute(string str, params object[] args)
         {
-            string query;
-
-            MySqlConnection conn = new MySqlConnection(connStr);
+            var conn = new MySqlConnection(connStr);
 
             try
             {
                 conn.Open();
 
-                query = string.Format(str, args);
-                MySqlCommand command = new MySqlCommand(query, conn);
+                var query = string.Format(str, args);
+                var command = new MySqlCommand(query, conn);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)

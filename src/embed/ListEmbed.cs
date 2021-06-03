@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace osu_tracker.embed
 {
-    class ListEmbed : EmbedBuilder
+    internal class ListEmbed : EmbedBuilder
     {
         public ListEmbed(DataTable userTable)
         {

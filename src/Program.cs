@@ -12,7 +12,7 @@ using osu_tracker.image;
 
 namespace osu_tracker
 {
-    class Program : ModuleBase<ShardedCommandContext>
+    internal class Program : ModuleBase<ShardedCommandContext>
     {
         private static DiscordShardedClient _client;
 
@@ -21,7 +21,7 @@ namespace osu_tracker
 
         public static string api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // 환경설정 매개변수
             try
@@ -60,7 +60,7 @@ namespace osu_tracker
                 .GetResult();
         }
 
-        public async Task CheckNewBest()
+        private static async Task CheckNewBest()
         {
             DataTable userTable = Sql.Get("SELECT user_id FROM targets GROUP BY user_id");
 
@@ -70,7 +70,9 @@ namespace osu_tracker
                 try
                 {
                     UserBest userBest;
-                    User user = User.Search((int)userRow["user_id"]);
+                    
+                    var uRow = userRow["user_id"];
+                    var user = User.Search(uRow);
 
                     // 이전 pp 기록이 있는지 확인
                     DataTable ppHistorySearchTable = Sql.Get(
