@@ -86,23 +86,31 @@ namespace osu_tracker.image
             Font arrow = new Font("Arial", 14, FontStyle.Regular);
 
             string songName = beatmap.artist + " - " + beatmap.title;
+            SizeF songNameSize = graphics.MeasureString(songName, large);
 
-            if (songName.Length >= 33)
+            if (songNameSize.Width > 480)
             {
-                songName = songName.Substring(0, 33) + "...";
+                songName = songName.Substring(0, 27) + "...";
             }
 
             graphics.DrawString(songName, large, new SolidBrush(Color.White), new Point(208, 25));
 
-            if (beatmap.version.Length >= 22)
-            {
-                beatmap.version = beatmap.version.Substring(0, 22) + "...";
-            }
+            string diffName = beatmap.version;
+            string starRating = string.Format("{0:0.00}", beatmap.difficultyrating);
 
-            graphics.DrawString("[" + beatmap.version + "]", large, new SolidBrush(Color.White), new Point(207, 58));
+            SizeF diffNameSize = graphics.MeasureString(diffName, large);
+            SizeF starRatingSize = graphics.MeasureString(starRating, large);
 
             IEnumerable<string> modList = score.enabled_mods.ToModList();
-            SizeF diffNameSize = graphics.MeasureString(beatmap.version, large);
+
+            if (diffNameSize.Width + starRatingSize.Width + (modList.Count() * 45) > 480)
+            {
+                diffName = diffName.Substring(0, 17) + "...";
+            }
+
+            graphics.DrawString("[" + diffName + "]", large, new SolidBrush(Color.White), new Point(207, 58));
+            diffNameSize = graphics.MeasureString(diffName, large);
+
             int index = 0;
 
             foreach (string mod in modList)
@@ -110,9 +118,7 @@ namespace osu_tracker.image
                 graphics.DrawImage(Image.FromStream(asset[mod]), 236 + diffNameSize.Width + index * 45, 63, 42.5f, 30);
                 index++;
             }
-
-            SizeF starRatingSize = graphics.MeasureString(string.Format("{0:0.00}", beatmap.difficultyrating), large);
-            graphics.DrawString(string.Format("{0:0.00}", beatmap.difficultyrating), large, new SolidBrush(Color.Yellow), new Point(238 + (int)diffNameSize.Width + index * 45, 59));
+            graphics.DrawString(starRating, large, new SolidBrush(Color.Yellow), new Point(238 + (int)diffNameSize.Width + index * 45, 59));
             graphics.DrawImage(Image.FromStream(asset["star"]), 238 + diffNameSize.Width + index * 45 + starRatingSize.Width, 63, 27, 27);
 
             Rectangle scoreRec = new Rectangle()
