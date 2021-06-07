@@ -24,26 +24,27 @@ namespace osu_tracker
         private CommandService _commands;
         private IServiceProvider _services;
 
-        public static string api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password;
+        public static string prefix, api_key, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password;
 
         private static void Main(string[] args)
         {
             // 환경설정 매개변수
             try
             {
-                api_key = args[0];
-                bot_token = args[1];
+                prefix = args[0];
+                api_key = args[1];
+                bot_token = args[2];
 
-                mysql_server = args[2];
-                mysql_port = args[3];
-                mysql_database = args[4];
-                mysql_uid = args[5];
-                mysql_password = args[6];
+                mysql_server = args[3];
+                mysql_port = args[4];
+                mysql_database = args[5];
+                mysql_uid = args[6];
+                mysql_password = args[7];
             }
             catch
             {
                 Console.WriteLine("프로그램 실행 시 다음 매개변수가 필요합니다:\n" +
-                    "[osu!API v1 키] [디스코드 봇 토큰] [MySQL 서버 주소] [MySQL 포트 번호] [MySQL DB 이름] [MySQL 유저 id] [MySQL 비밀번호]"
+                    "[명령어 접두사] [osu!API v1 키] [디스코드 봇 토큰] [MySQL 서버 주소] [MySQL 포트 번호] [MySQL DB 이름] [MySQL 유저 id] [MySQL 비밀번호]"
                     );
                 return;
             }
@@ -235,7 +236,7 @@ namespace osu_tracker
             }  
             var guild = messageChannel.Guild.Id.ToString();
 
-            if (message.HasStringPrefix("-", ref argPos))
+            if (message.HasStringPrefix(prefix, ref argPos))
             {
                 var channel = _client.GetGuild(ulong.Parse(guild)).GetTextChannel(message.Channel.Id);
 
