@@ -1,13 +1,17 @@
 ﻿using Discord;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using osu_tracker.api;
 using System.Threading.Tasks;
+// ReSharper disable HeapView.BoxingAllocation
 
 namespace osu_tracker.embed
 {
     internal class ListEmbed : EmbedBuilder
     {
+        [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
+        [SuppressMessage("ReSharper", "RedundantLambdaSignatureParentheses")]
         public ListEmbed(DataTable userTable)
         {
             WithColor(new Color(0xFF69B4));
@@ -27,6 +31,7 @@ namespace osu_tracker.embed
 
                 // db에서 받아온 DataTable을 UserInfo 리스트로 변환
                 Parallel.For(0, userTable.Rows.Count,
+                    // ReSharper disable once HeapView.ClosureAllocation
                     (i) => {
                         var user = User.Search(userTable.Rows[i]["user_id"].ToString());
 
@@ -40,6 +45,7 @@ namespace osu_tracker.embed
                     });
 
                 // 랭크 순으로 정렬해서 embed에 추가
+                // ReSharper disable once HeapView.ClosureAllocation
                 userList.Sort((x, y) => x.pp_rank.CompareTo(y.pp_rank));
 
                 foreach (var user in userList)

@@ -1,6 +1,6 @@
 ﻿using Discord;
 using osu_tracker.api;
-using System.Collections.Generic;
+// ReSharper disable HeapView.BoxingAllocation
 
 namespace osu_tracker.embed
 {
@@ -34,8 +34,8 @@ namespace osu_tracker.embed
 
             WithAuthor(author => { author
                 .WithName(user.username)
-                .WithUrl("https://osu.ppy.sh/users/" + user.user_id)
-                .WithIconUrl("https://www.countryflags.io/" + user.country.ToLower() + "/flat/64.png");
+                .WithUrl($"https://osu.ppy.sh/users/{user.user_id}")
+                .WithIconUrl($"https://www.countryflags.io/{user.country.ToLower()}/flat/64.png");
             });
 
             if (user.pp_rank == 0)
@@ -48,7 +48,7 @@ namespace osu_tracker.embed
             {
                 WithDescription("​장기간 활동이 없는 유저\n\u200B");
 
-                AddField("순위", "#" + user.pp_rank, true);
+                AddField("순위", $"#{user.pp_rank}", true);
                 AddField("주력 모드", mainModString, true);
                 AddField("\u200B", "\u200B", true);
                 AddField("정확도", $"{user.accuracy:0.##}%", true);
@@ -62,8 +62,8 @@ namespace osu_tracker.embed
                 AddField("주력 모드", mainModString, true);
                 AddField("\u200B", "\u200B", true);
 
-                AddField("순위", "#" + user.pp_rank, true);
-                AddField("국가 순위", "#" + user.pp_country_rank, true);
+                AddField("순위", $"#{user.pp_rank}", true);
+                AddField("국가 순위", $"#{user.pp_country_rank}", true);
                 AddField("\u200B", "\u200B", true);
                 
                 AddField("정확도", $"{user.accuracy:0.##}%", true);
@@ -72,11 +72,11 @@ namespace osu_tracker.embed
 
             AddField("\u200B", "\u200B", true);
 
-            AddField("플레이 횟수", user.playcount + "회\n\u200B", true);
-            AddField("플레이 시간", user.total_seconds_played / 3600 + "시간\u200B", true);
+            AddField("플레이 횟수", $"{user.playcount}회\n​", true);
+            AddField("플레이 시간", $"{user.total_seconds_played / 3600}시간​", true);
             AddField("\u200B", "\u200B", true);
 
-            WithThumbnailUrl("https://a.ppy.sh/" + user.user_id);
+            WithThumbnailUrl($"https://a.ppy.sh/{user.user_id}");
             
             WithFooter(footer => { footer
                 .WithText("가입 일시");

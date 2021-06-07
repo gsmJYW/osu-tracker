@@ -7,6 +7,9 @@ using System.Data;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedType.Global
+// ReSharper disable HeapView.BoxingAllocation
 
 namespace osu_tracker.command
 {
@@ -15,11 +18,12 @@ namespace osu_tracker.command
         [Command("recent")]
         public async Task Recent(params string[] args)
         {
-            string username = string.Join(" ", args);
+            var username = string.Join(" ", args);
 
             if (username.Length == 0)
             {
-                DataTable userTable = Sql.Get("SELECT * FROM users WHERE discord_id = '{0}'", Context.User.Id);
+                // ReSharper disable once HeapView.ObjectAllocation
+                var userTable = Sql.Get("SELECT * FROM users WHERE discord_id = '{0}'", Context.User.Id);
 
                 if (userTable.Rows.Count > 0)
                 {
@@ -44,9 +48,11 @@ namespace osu_tracker.command
                 return;
             }
 
-            using MemoryStream memoryStream = new MemoryStream();
+            // ReSharper disable once HeapView.ObjectAllocation.Evident
+            await using var memoryStream = new MemoryStream();
 
-            ScoreImage recentImage = new ScoreImage(recent);
+            // ReSharper disable once HeapView.ObjectAllocation.Evident
+            var recentImage = new ScoreImage(recent);
             recentImage.DrawImage().Save(memoryStream, ImageFormat.Png);
             memoryStream.Seek(0, SeekOrigin.Begin);
 
