@@ -16,8 +16,7 @@ namespace osu_tracker
         public static DataTable Get(string str, params object[] args)
         {
             var ds = new DataSet();
-
-            var conn = new MySqlConnection(connStr);
+            using var conn = new MySqlConnection(connStr);
 
             try
             {
@@ -36,17 +35,13 @@ namespace osu_tracker
             {
                 Console.WriteLine(e.Message);
             }
-            finally
-            {
-                conn.Close();
-            }
 
             return ds.Tables[0];
         }
 
         public static void Execute(string str, params object[] args)
         {
-            var conn = new MySqlConnection(connStr);
+            using var conn = new MySqlConnection(connStr);
 
             try
             {
@@ -59,10 +54,6 @@ namespace osu_tracker
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                conn.Close();
             }
         }
     }
