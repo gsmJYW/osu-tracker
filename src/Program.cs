@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -146,6 +147,7 @@ namespace osu_tracker
             await Task.Factory.StartNew(() => CheckNewBest());
         }
 
+        [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
         public async Task RunBotAsync()
         {
             _client = new DiscordShardedClient();
@@ -171,7 +173,7 @@ namespace osu_tracker
         private async Task _client_JoinedGuild(SocketGuild guild)
         {
             // 서버 입장 시 권한 확인
-            GuildPermissions permission = guild.GetUser(_client.CurrentUser.Id).GuildPermissions;
+            var permission = guild.GetUser(_client.CurrentUser.Id).GuildPermissions;
 
             try
             {
@@ -213,15 +215,27 @@ namespace osu_tracker
             var message = arg as SocketUserMessage;
             var context = new ShardedCommandContext(_client, message);
 
+            if (message == null)
+            {
+                Console.WriteLine("message is null");
+                return;
+            }
+            
             if (message.Author.IsBot)
             {
                 return;
             }
 
             var argPos = 0;
-            var guild = (message.Channel as SocketGuildChannel).Guild.Id.ToString();
 
-            if (message.HasStringPrefix(">", ref argPos))
+            if (message.Channel is not SocketGuildChannel messageChannel)
+            {
+                Console.WriteLine("channel is null");
+                return;
+            }  
+            var guild = messageChannel.Guild.Id.ToString();
+
+            if (message.HasStringPrefix("-", ref argPos))
             {
                 var channel = _client.GetGuild(ulong.Parse(guild)).GetTextChannel(message.Channel.Id);
 

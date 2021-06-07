@@ -1,22 +1,25 @@
-﻿using Discord.Commands;
+﻿using System;
+using System.Threading.Tasks;
+using Discord.Commands;
 using osu_tracker.api;
 using osu_tracker.embed;
-using System;
-using System.Data;
-using System.Threading.Tasks;
+// ReSharper disable UnusedType.Global
 
 namespace osu_tracker.command
 {
     public class InfoCommand : ModuleBase<ShardedCommandContext>
-    {
+    {   
+        // ReSharper disable once UnusedMember.Global
         [Command("info")]
         public async Task Info(params string[] args)
         {
-            string username = string.Join(" ", args);
+            var username = string.Join(" ", args);
 
             if (username.Length == 0)
             {
-                DataTable userTable = Sql.Get("SELECT * FROM users WHERE discord_id = '{0}'", Context.User.Id);
+                // ReSharper disable once HeapView.ObjectAllocation
+                // ReSharper disable once HeapView.BoxingAllocation
+                var userTable = Sql.Get("SELECT * FROM users WHERE discord_id = '{0}'", Context.User.Id);
 
                 if (userTable.Rows.Count > 0)
                 {
@@ -41,6 +44,7 @@ namespace osu_tracker.command
                 return;
             }
 
+            // ReSharper disable once HeapView.ObjectAllocation.Evident
             var infoEmbed = new InfoEmbed(user);
             await ReplyAsync(embed: infoEmbed.Build());
         }

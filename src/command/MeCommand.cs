@@ -5,25 +5,30 @@ using osu_tracker.api;
 using System;
 using System.Data;
 using System.Threading.Tasks;
+// ReSharper disable HeapView.BoxingAllocation
 
 namespace osu_tracker.command
 {
+    // ReSharper disable once UnusedType.Global
     public class MeCommand : ModuleBase<ShardedCommandContext>
     {
+        // ReSharper disable once UnusedMember.Global
         [Command("me")]
         public async Task Recent(params string[] args)
         {
-            SocketUser discordUser = Context.User;
-            string username = string.Join(" ", args);
+            var discordUser = Context.User;
+            var username = string.Join(" ", args);
 
-            DataTable userTable = Sql.Get("SELECT * FROM users WHERE discord_id = '{0}'", discordUser.Id);
+            // ReSharper disable once HeapView.ObjectAllocation
+            var userTable = Sql.Get("SELECT * FROM users WHERE discord_id = '{0}'", discordUser.Id);
 
             if (username.Length == 0)
             {
                 if (userTable.Rows.Count > 0)
                 {
+                    // ReSharper disable once HeapView.ObjectAllocation
                     Sql.Execute("DELETE FROM users WHERE discord_id = '{0}'", discordUser.Id);
-                    await ReplyAsync("**" + discordUser.Username + "**님의 유저 정보를 삭제 했습니다.");
+                    await ReplyAsync($"**{discordUser.Username}**님의 유저 정보를 삭제 했습니다.");
                 }
                 else
                 {
@@ -47,14 +52,16 @@ namespace osu_tracker.command
 
             if (userTable.Rows.Count > 0)
             {
-                Sql.Execute("UPDATE users SET user_id = {0} WHERE discord_id = '{1}'", user.user_id, discordUser.Id);
+                // ReSharper disable once HeapView.ObjectAllocation
+                Sql.Execute("UPDATE users SET user_id = '{0}' WHERE discord_id = '{1}'", user.user_id, discordUser.Id);
             }
             else
             {
-                Sql.Execute("INSERT INTO users VALUES ('{0}', {1})", discordUser.Id, user.user_id);
+                // ReSharper disable once HeapView.ObjectAllocation
+                Sql.Execute("INSERT INTO users VALUES ('{0}', '{1}')", discordUser.Id, user.user_id);
             }
 
-            await ReplyAsync("**" + discordUser.Username + "**님의 유저 정보를 등록 했습니다.");
+            await ReplyAsync($"**{discordUser.Username}**님의 유저 정보를 등록 했습니다.");
         }
     }
 }
