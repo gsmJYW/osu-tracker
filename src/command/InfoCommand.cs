@@ -27,7 +27,7 @@ namespace osu_tracker.command
                 }
                 else
                 {
-                    await ReplyAsync("**유저명**을 입력하지 않으셨습니다.\n유저명을 생략하고 싶으시면 `>me 유저명`으로 유저 정보를 등록하세요.");
+                    await ReplyAsync($"**유저명**을 입력하지 않으셨습니다.\n유저명을 생략하고 싶으시면 `{Program.prefix}me 유저명`으로 유저 정보를 등록하세요.");
                     return;
                 }
             }
