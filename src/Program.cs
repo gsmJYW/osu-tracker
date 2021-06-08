@@ -24,8 +24,8 @@ namespace osu_tracker
         private CommandService _commands;
         private IServiceProvider _services;
 
-        private static string prefix, bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password;
-        public static string api_key { get; set; }
+        public static string prefix, api_key;
+        private static string bot_token, mysql_server, mysql_port, mysql_database, mysql_uid, mysql_password;
 
         private static void Main(string[] args)
         {
@@ -166,7 +166,7 @@ namespace osu_tracker
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, bot_token);
             await _client.StartAsync();
-            await _client.SetGameAsync(">help");
+            await _client.SetGameAsync($"{prefix}help");
 
             await CheckNewBest();
             await Task.Delay(-1);
