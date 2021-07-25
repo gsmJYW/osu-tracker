@@ -59,7 +59,7 @@ namespace osu_tracker.region
             return (language, value) switch
             {
                 ("ko", "performance") => Kr_Performance.ToString(),
-                ("ko", "mode") => Kr_MainMode.ToString(),
+                ("ko", "main_mode") => Kr_MainMode.ToString(),
                 ("ko", "pp_rank") => Kr_PPRank.ToString(),
                 ("ko", "pp_country_rank") => Kr_PPCountryRank.ToString(),
                 ("ko", "accuracy") => Kr_Accuracy.ToString(),
@@ -68,7 +68,7 @@ namespace osu_tracker.region
                 ("ko", "total_seconds_played") => Kr_TotalSecondsPlayed.ToString(),
                 ("ko", "join_date") => Kr_JoinDate.ToString(),
                 ("en", "performance") => En_Performance.ToString(),
-                ("en", "mode") => En_MainMode.ToString(),
+                ("en", "main_mode") => En_MainMode.ToString(),
                 ("en", "pp_rank") => En_PPRank.ToString(),
                 ("en", "pp_country_rank") => En_PPCountryRank.ToString(),
                 ("en", "accuracy") => En_Accuracy.ToString(),

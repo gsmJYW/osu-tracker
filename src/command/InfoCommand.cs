@@ -43,9 +43,8 @@ namespace osu_tracker.command
                 await ReplyAsync(e.Message);
                 return;
             }
-
             // ReSharper disable once HeapView.ObjectAllocation.Evident
-            var infoEmbed = new InfoEmbed(user);
+            var infoEmbed = new InfoEmbed(user, "en");
             await ReplyAsync(embed: infoEmbed.Build());
         }
     }
