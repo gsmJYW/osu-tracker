@@ -45,14 +45,14 @@ namespace osu_tracker.region
         }
         // English
         public static readonly EN no_user_play_history = new("Users with no play history");
-        public static readonly EN performance = new ("performance");
-        public static readonly EN main_mode = new ("main mode");
+        public static readonly EN performance = new ("Performance");
+        public static readonly EN main_mode = new ("Main mod");
         public static readonly EN pp_rank = new ("pp rank");
         public static readonly EN pp_country_rank = new("pp country rank");
-        public static readonly EN accuracy = new ("accuracy");
-        public static readonly EN level = new ("level");
-        public static readonly EN playcount = new("play count");
-        public static readonly EN total_seconds_played = new("total play time");
+        public static readonly EN accuracy = new ("Accuracy");
+        public static readonly EN level = new ("Level");
+        public static readonly EN playcount = new("Play count");
+        public static readonly EN total_seconds_played = new("Total play time");
         public static readonly EN join_date = new("Join date");
         public static readonly EN lomg_time_no_active = new("Users who have been inactive for a long time");
         public static readonly EN i_am_osu_tracker_developer = new("I am osu! tracker developer");

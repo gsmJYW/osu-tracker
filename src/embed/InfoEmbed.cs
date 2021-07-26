@@ -82,7 +82,7 @@ namespace osu_tracker.embed
             WithThumbnailUrl($"https://a.ppy.sh/{user.user_id}");
             
             WithFooter(footer => { footer
-                .WithText(language.select(userLanguage, "tjoin_date"));
+                .WithText(language.select(userLanguage, "join_date"));
             });
             WithTimestamp(user.join_date.ToDateTimeOffset());
         }
