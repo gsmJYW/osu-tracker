@@ -43,13 +43,13 @@ namespace osu_tracker.embed
 
             if (user.pp_rank == 0)
             {
-                WithDescription("플레이 ​기록이 없는 유저\n\u200B");
+                WithDescription(language.select(userLanguage, "no_user_play_history") + "\n\u200B");
                 AddField(language.select(userLanguage, "level"), $"{user.level:0.##}", true);
                 AddField("\u200B", "\u200B", true);
             }
             else if (user.pp_raw == 0)
             {
-                WithDescription("​장기간 활동이 없는 유저\n\u200B");
+                WithDescription(language.select(userLanguage, "lomg_time_no_active") + "​\n\u200B");
 
                 AddField(language.select(userLanguage, "pp_rank"), $"#{user.pp_rank}", true);
                 AddField(language.select(userLanguage, "main_mode"), mainModString, true);
@@ -59,7 +59,7 @@ namespace osu_tracker.embed
             }
             else
             {
-                WithDescription(user.user_id == 10901226 ? "개발자입니다!\n\u200B" : "​");
+                WithDescription(user.user_id == 10901226 | user.user_id == 14977949 ? language.select(userLanguage, "i_am_osu_tracker_developer") + "!\n\u200B" : "​");
 
                 AddField(language.select(userLanguage, "performance"), $"{user.pp_raw:0.##}pp", true);
                 AddField(language.select(userLanguage, "main_mode"), mainModString, true);
