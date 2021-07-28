@@ -29,4 +29,10 @@ CREATE TABLE `osutracker`.`pphistories` (
   `pp_rank` int(11) NOT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `guilds` (
+  `id` char(18) NOT NULL,
+  `lang` char(2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
