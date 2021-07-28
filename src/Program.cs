@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,10 +9,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using osu_tracker.api;
 using osu_tracker.image;
-// ReSharper disable HeapView.ObjectAllocation
-// ReSharper disable HeapView.BoxingAllocation
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable HeapView.ObjectAllocation.Evident
 
 namespace osu_tracker
 {
@@ -149,7 +144,6 @@ namespace osu_tracker
             await Task.Factory.StartNew(() => CheckNewBest());
         }
 
-        [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
         public async Task RunBotAsync()
         {
             _client = new DiscordShardedClient();
@@ -197,6 +191,7 @@ namespace osu_tracker
         {
             // 서버에서 추방됐거나 서버가 삭제됐을 경우 해당 길드에서 추적하던 유저 제거
             Sql.Execute("DELETE FROM targets WHERE guild_id = '{0}'", guild.Id);
+            Sql.Execute("DELETE FROM guilds WHERE id = '{0}'", guild.Id);
             return Task.CompletedTask;
         }
 
