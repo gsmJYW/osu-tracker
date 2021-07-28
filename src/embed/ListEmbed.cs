@@ -1,37 +1,31 @@
 ﻿using Discord;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using osu_tracker.api;
 using System.Threading.Tasks;
-// ReSharper disable HeapView.BoxingAllocation
+using osu_tracker.region;
 
 namespace osu_tracker.embed
 {
     internal class ListEmbed : EmbedBuilder
     {
-        [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
-        [SuppressMessage("ReSharper", "RedundantLambdaSignatureParentheses")]
-        public ListEmbed(DataTable userTable)
+        public ListEmbed(DataTable userTable, Language lang)
         {
             WithColor(new Color(0xFF69B4));
 
-            WithTitle("추적 중인 플레이어");
+            WithTitle(lang.Select("tracking_players"));
             WithDescription("\u200B");
 
             if (userTable.Rows.Count == 0)
             {
-                AddField("이 서버에서 추적 중인 플레이어가 없습니다.", "`>track 유저명`으로 추가할 수 있습니다.");
+                AddField(lang.Select("no_tracking_players"), lang.Select("how_to_track"));
             }
             else
             {
-                // ReSharper disable once HeapView.ClosureAllocation
-                // ReSharper disable once HeapView.ObjectAllocation.Evident
                 var userList = new List<User>();
 
                 // db에서 받아온 DataTable을 UserInfo 리스트로 변환
                 Parallel.For(0, userTable.Rows.Count,
-                    // ReSharper disable once HeapView.ClosureAllocation
                     (i) => {
                         var user = User.Search(userTable.Rows[i]["user_id"].ToString());
 
@@ -45,7 +39,6 @@ namespace osu_tracker.embed
                     });
 
                 // 랭크 순으로 정렬해서 embed에 추가
-                // ReSharper disable once HeapView.ClosureAllocation
                 userList.Sort((x, y) => x.pp_rank.CompareTo(y.pp_rank));
 
                 foreach (var user in userList)

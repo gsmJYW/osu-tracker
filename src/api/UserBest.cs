@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json;
+using osu_tracker.region;
 using System;
 using System.Collections.Generic; 
 using System.Linq;
 using System.Net;
-// ReSharper disable HeapView.BoxingAllocation
-// ReSharper disable RedundantDefaultMemberInitializer
 
 namespace osu_tracker.api
 {
@@ -24,7 +23,6 @@ namespace osu_tracker.api
         {
             this.user_id = user_id;
 
-            // ReSharper disable once HeapView.ObjectAllocation.Evident
             var userBest = new WebClient().DownloadString($"https://osu.ppy.sh/api/get_user_best?k={Program.api_key}&u={user_id}&limit=100"); // api에 베퍼포 정보 요청
             bestList = JsonConvert.DeserializeObject<List<Score>>(userBest); // 베퍼포 100개를 Score 리스트로 변환
 
@@ -47,10 +45,7 @@ namespace osu_tracker.api
             pp_raw = user.pp_raw;
             pp_rank = user.pp_rank;
 
-            // ReSharper disable once UnusedVariable
-            // ReSharper disable once HeapView.ObjectAllocation
             var userTableSearch = Sql.Get("SELECT user_id FROM pphistories WHERE user_id = '{0}'", user_id); // 점수 정보에 해당 유저가 있는지 확인
-            // ReSharper disable once HeapView.ObjectAllocation
             var ppHistory = Sql.Get("SELECT * FROM pphistories WHERE user_id = '{0}'", user_id).Rows[0];
 
             var previous_pp_sum = Convert.ToDouble(ppHistory["pp_sum"]);
@@ -59,7 +54,6 @@ namespace osu_tracker.api
 
             if (!pp_sum.IsCloseTo(previous_pp_sum))
             {
-                // ReSharper disable once HeapView.ObjectAllocation
                 newBest = bestList.OrderByDescending(
                     x => DateTime.ParseExact(x.date, "yyyy-MM-dd HH:mm:ss", null).AddHours(9)
                 ).FirstOrDefault();
@@ -70,7 +64,6 @@ namespace osu_tracker.api
                 }
             }
 
-            // ReSharper disable once HeapView.ObjectAllocation
             Sql.Execute("UPDATE pphistories SET pp_sum = '{0}', pp_raw = '{1}', pp_rank = '{2}' WHERE user_id = '{3}'", pp_sum, pp_raw, pp_rank, user_id);
         }
 
@@ -78,7 +71,6 @@ namespace osu_tracker.api
         public void GetMainMods()
         {
             var weight = 0;
-            // ReSharper disable once HeapView.ObjectAllocation.Evident
             var modList = new Dictionary<int, double>();
 
             var halfBestList = bestList.GetRange(0, bestList.Count / 2); // 베퍼포 중 만 검사
@@ -86,7 +78,6 @@ namespace osu_tracker.api
             foreach (var best in halfBestList)
             {
                 var mods = best.enabled_mods;
-                // ReSharper disable once HeapView.ObjectAllocation
                 var modBinary = Convert.ToString(mods, 2).Select(s => s.Equals('1')).ToArray(); // 10진수를 2진 비트 배열로 저장
 
                 // 불필요한 모드 삭제
