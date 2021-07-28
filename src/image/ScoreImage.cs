@@ -1,14 +1,12 @@
 ﻿using osu_tracker.api;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Net;
 using System.IO;
 using System.Linq;
 using Tarczynski.NtpDateTime;
 using System.Drawing.Imaging;
-// ReSharper disable HeapView.ObjectAllocation.Evident
 
 namespace osu_tracker.image
 {
@@ -66,7 +64,6 @@ namespace osu_tracker.image
             bestImage = true;
         }
 
-        [SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
         public Image DrawImage()
         {
             if (bestImage)
@@ -74,7 +71,6 @@ namespace osu_tracker.image
                 score = userBest.newBest;
             }
 
-            // ReSharper disable once HeapView.BoxingAllocation
             var user = User.Search(score.user_id);
             var beatmap = Beatmap.Search(score.beatmap_id, score.enabled_mods);
 
@@ -82,7 +78,6 @@ namespace osu_tracker.image
             StackBlur.StackBlur.Process((Bitmap)wallpaper, 8);
 
             var graphics = Graphics.FromImage(wallpaper);
-            // ReSharper disable once HeapView.ObjectAllocation.Evident
             graphics.FillRectangle(new SolidBrush(Color.FromArgb(144, 0, 0, 0)), 0, 0, wallpaper.Width, wallpaper.Height);
 
             graphics.DrawImage(Image.FromStream(asset[score.rank]), 23, 28, 168.82f, 204.7f);
@@ -102,7 +97,6 @@ namespace osu_tracker.image
             graphics.DrawString(songName, large, new SolidBrush(Color.White), new Point(208, 25));
 
             var diffName = beatmap.version;
-            // ReSharper disable once HeapView.BoxingAllocation
             var starRating = $"{beatmap.difficultyrating:0.00}";
 
             var diffNameSize = graphics.MeasureString(diffName, large);
@@ -122,7 +116,6 @@ namespace osu_tracker.image
 
             var index = 0;
 
-            // ReSharper disable once HeapView.ObjectAllocation.Possible
             foreach (var mod in enumerable)
             {
                 graphics.DrawImage(Image.FromStream(asset[mod]), 236 + diffNameSize.Width + index * 45, 63, 42.5f, 30);
@@ -131,7 +124,6 @@ namespace osu_tracker.image
             graphics.DrawString(starRating, large, new SolidBrush(Color.Yellow), new Point(238 + (int)diffNameSize.Width + index * 45, 59));
             graphics.DrawImage(Image.FromStream(asset["star"]), 238 + diffNameSize.Width + index * 45 + starRatingSize.Width, 63, 27, 27);
 
-            // ReSharper disable once RedundantEmptyObjectCreationArgumentList
             var scoreRec = new Rectangle()
             {
                 Width = wallpaper.Width - 25,
@@ -140,7 +132,6 @@ namespace osu_tracker.image
                 Y = 25
             };
 
-            // ReSharper disable once RedundantEmptyObjectCreationArgumentList
             var accuracyRec = new Rectangle()
             {
                 Width = wallpaper.Width - 25,
@@ -155,7 +146,6 @@ namespace osu_tracker.image
                 LineAlignment = StringAlignment.Near
             });
 
-            // ReSharper disable once HeapView.BoxingAllocation
             graphics.DrawString($"{score.Accuracy():0.00}%", large, new SolidBrush(Color.White), accuracyRec, new StringFormat()
             {
                 Alignment = StringAlignment.Far,
@@ -163,11 +153,9 @@ namespace osu_tracker.image
             });
 
             graphics.DrawImage(Image.FromStream(asset["hit300"]), 206, 110, 51.5f, 30);
-            // ReSharper disable once HeapView.BoxingAllocation
             graphics.DrawString($"x{score.count300}", medium, new SolidBrush(Color.White), new Point(260, 115));
 
             graphics.DrawImage(Image.FromStream(asset["hit100"]), 208, 152, 48.5f, 28.5f);
-            // ReSharper disable once HeapView.BoxingAllocation
             graphics.DrawString($"x{score.count100}", medium, new SolidBrush(Color.White), new Point(260, 157));
             
             graphics.DrawString($"x{score.maxcombo}/{beatmap.max_combo}", large, new SolidBrush(Color.White), new Point(208, 191));
@@ -178,7 +166,6 @@ namespace osu_tracker.image
             graphics.DrawImage(Image.FromStream(asset["hit0"]), 328, 152, 30, 30);
             graphics.DrawString($"x{score.countmiss}", medium, new SolidBrush(Color.White), new Point(364, 157));
 
-            // ReSharper disable once RedundantEmptyObjectCreationArgumentList
             var rightBottom = new Rectangle()
             {
                 Width = wallpaper.Width - 25,
@@ -249,7 +236,6 @@ namespace osu_tracker.image
 
                 var timeSpan = now.Subtract(date);
 
-                // ReSharper disable once RedundantEmptyObjectCreationArgumentList
                 graphics.DrawString($"{timeSpan.Hours}h {timeSpan.Minutes}m ago", large, new SolidBrush(Color.White), rightBottom, new StringFormat()
                 {
                     Alignment = StringAlignment.Far,

@@ -23,13 +23,8 @@ namespace osu_tracker
                 conn.Open();
 
                 var query = string.Format(str, args);
-                // ReSharper disable once HeapView.ObjectAllocation.Evident
                 var adpt = new MySqlDataAdapter(query, conn);
                 
-                // INFO: Expression is always false
-                // if (adpt == null)
-                //    // ReSharper disable once HeuristicUnreachableCode
-                //    return new DataTable();
 
                 adpt.Fill(ds, "members");
             }
@@ -50,7 +45,6 @@ namespace osu_tracker
                 conn.Open();
 
                 var query = string.Format(str, args);
-                // ReSharper disable once HeapView.ObjectAllocation.Evident
                 var command = new MySqlCommand(query, conn);
                 command.ExecuteNonQuery();
             }
