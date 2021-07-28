@@ -68,7 +68,7 @@ namespace osu_tracker.embed
             AddField("\u200B", "\u200B", true);
 
             AddField(lang.Select("playcount"), $"{user.playcount}\n​", true);
-            AddField(lang.Select("total_play_time"), $"{user.total_seconds_played / 3600} hours", true);
+            AddField(lang.Select("total_play_time"), $"{user.total_seconds_played / 3600}h", true);
             AddField("\u200B", "\u200B", true);
 
             WithThumbnailUrl($"https://a.ppy.sh/{user.user_id}");

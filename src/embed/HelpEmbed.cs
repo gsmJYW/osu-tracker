@@ -31,7 +31,7 @@ namespace osu_tracker.embed
                     break;
 
                 default:
-                    AddField($"{Program.prefix}help", "Shows how to use osu!tracker");
+                    AddField($"{Program.prefix}help", "Shows how to use osu!tracker.");
                     AddField($"{Program.prefix}lang language", "Changes the language for this server.\nOnly administrators can use this feature.\nLanguages currently supported: `en`, `kr`");
                     AddField($"{Program.prefix}info username", "Shows the player's information.");
                     AddField($"{Program.prefix}track username",
@@ -43,7 +43,7 @@ namespace osu_tracker.embed
                     AddField($"{Program.prefix}recent username", "Shows the player's recent play.");
                     AddField($"{Program.prefix}me username",
                      $@"Registers your user info,
-                so that you don't have to type username everytime you use a command.
+                so that you don't have to type a username everytime you use a command.
                 If you want to delete your user info, just type `{Program.prefix}me`");
                     AddField($"{Program.prefix}list", "Shows players being tracked from this server.");
                     break;
